@@ -1,0 +1,43 @@
+# Reporte de Estado de Sprint
+
+**Alcance de la regla:** se carga bajo demanda cuando una sesión está por imprimir un árbol de estado de sprint.
+
+## Regla
+Todo sprint recibe un árbol de estado — siempre, antes de lanzar agentes y después de cada oleada completada.
+
+## Formato
+
+```
+😸 Sprint N — activo
+├── 🤖 agentes  — N en paralelo (agente1·agente2·agente3·...)
+├── 🧠 skills   — skill1 → skill2 → skill3
+├── 📊 métricas — tests X→Y · PHPStan 0 errores · build ✅
+├── ✅ archivo.php       — resumen de una línea de lo hecho
+├── 🔄 agente_pendiente  — descripción breve de la tarea
+└── 🔒 adversarial       — alcance de la revisión de seguridad final
+```
+
+## Orden de filas (fijo — siempre en esta secuencia)
+
+1. **🤖 agentes** — cuántos corriendo y cuáles (señal en tiempo real)
+2. **🧠 skills** — skills de Superpowers disparados en este sprint, en orden
+3. **📊 métricas** — delta de tests (antes → después), errores de PHPStan, estado del build
+4. **✅ / 🔄 / ❌** — una fila por archivo o agente trabajado
+5. **🔒 adversarial** — siempre al final
+
+## Leyenda de emoji
+
+- **😸** — solo el encabezado (UNO por árbol de sprint, en ningún otro lugar)
+- **✅** — completado
+- **🔄** — en progreso / esperando
+- **❌** — fallido / bloqueado
+- **🔒** — revisión adversarial de seguridad (siempre la última fila)
+
+## Reglas
+
+- Imprime el árbol ANTES de lanzar agentes (muestra el plan — la fila de métricas muestra la línea base)
+- Reconstruye el árbol después de cada oleada completada (la fila de métricas se actualiza con deltas)
+- UN solo 😸 en el encabezado del sprint — el resto usa ✅ / 🔄 / ❌ / 🔒
+- Las filas 🤖 / 🧠 / 📊 siempre presentes — usa "—" si aún no se sabe
+- Una línea por agente/archivo, descripción ≤50 caracteres
+- `adversarial` siempre tiene su propia fila 🔒 al final
