@@ -2,7 +2,7 @@
 
 Configuración base de Claude Code para un tech lead fullstack en **Symfony 6.4/8 · PHP 8.3/8.4 · Twig · JavaScript** — Grupo de Expertos con 6 agentes, patrones de oleadas paralelas, y skills de Superpowers cableados.
 
-Adaptado del setup multi-agente original (React/Next.js/Python/AWS) a este stack.
+Setup multi-agente enfocado exclusivamente en el ámbito PHP.
 
 ## Qué incluye
 
@@ -65,6 +65,6 @@ claude plugin install superpowers
 
 ## Notas
 
-- Los 6 agentes están recortados para este stack — sin devops/AWS/LangChain/scraping del setup original.
+- Los 6 agentes están recortados para este stack — 100% ámbito PHP/Symfony, sin agentes de otros dominios.
 - `parallel-executor` reemplaza `superpowers:subagent-driven-development` (que fuerza despacho secuencial) — dispara oleadas paralelas de agentes agrupadas por solapamiento de archivos.
 - Ver `CLAUDE.md` → sección "REGLAS NO NEGOCIABLES" para el detalle de mínimo 3 / objetivo 5 agentes en paralelo por tarea.

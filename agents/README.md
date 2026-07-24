@@ -1,6 +1,6 @@
 # Grupo de Expertos — Roster Symfony/PHP/Twig/JS
 
-Adaptado de `claude-code-master-prompt` (GatoProgramador-01) al stack **Symfony 6.4/8.x · PHP 8.3/8.4 · Twig · JavaScript**. Roster reducido a los 6 agentes relevantes para este stack — se eliminaron `llmops-expert`, `devops-expert`, `researcher`, `scraper`, `prompt-engineer`, `eval-writer` y `sme-reviewer` por no aplicar (LangChain/AWS/Terraform/scraping/contenido no forman parte de este stack).
+Roster enfocado exclusivamente en el stack **Symfony 6.4/8.x · PHP 8.3/8.4 · Twig · JavaScript** — 6 agentes, todos de ámbito PHP.
 
 **Soporte dual de versión:** `backend-expert` detecta con `composer show symfony/framework-bundle` si el proyecto corre 6.4 (LTS, PHP 8.3+) u 8.x (PHP 8.4 obligatorio, deprecaciones de 7.x removidas, componentes nuevos `ObjectMapper`/`JsonStreamer`/`JsonPath`). Detalle completo en `~/.claude/rules/php/symfony.md`.
 
@@ -34,14 +34,6 @@ Gate mecánico de validación pre-commit: `composer validate`, `lint:yaml`, `lin
 
 ### drafter
 Implementador de respaldo del `parallel-executor` para archivos sin dueño de dominio exacto (scripts de consola aislados, DTOs puros, fixtures). RED-tests-first siempre.
-
-## Agentes retirados (no aplican a este stack)
-
-- `llmops-expert` → dependía de LangGraph/LangChain, fuera de alcance
-- `devops-expert` → AWS/Terraform/Railway/Vercel, explícitamente fuera de alcance para esta instalación
-- `researcher` → investigación web genérica, no central al sistema multiagente de este stack
-- `scraper` → scraping HTTP/browser, no aplica
-- `prompt-engineer` / `eval-writer` / `sme-reviewer` → pipeline de contenido LLMOps, no aplica
 
 ## Estructura del cartucho (9 slots)
 
