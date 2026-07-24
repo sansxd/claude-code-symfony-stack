@@ -63,6 +63,15 @@ Este setup depende del plugin `superpowers` (brainstorming, TDD, systematic-debu
 claude plugin install superpowers
 ```
 
+## Plugin recomendado
+
+`php-lsp` (Intelephense) da inteligencia de código real sobre archivos `.php` del proyecto Symfony (goToDefinition, findReferences, hover, workspaceSymbol) — no es parte del roster de agentes, pero complementa a `backend-expert` cuando navega el código existente:
+
+```bash
+claude plugin install php-lsp
+npm install -g intelephense   # requerido por el plugin, se instala aparte
+```
+
 ## Notas
 
 - Los 6 agentes están recortados para este stack — 100% ámbito PHP/Symfony, sin agentes de otros dominios.
