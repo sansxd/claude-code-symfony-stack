@@ -73,6 +73,7 @@ Reglas profundas viven en `~/.claude/rules/` (se cargan bajo demanda, no consume
 - **JS:** Stimulus controllers para interactividad ligera, Turbo para navegación sin SPA completa; Webpack Encore o AssetMapper según lo que el proyecto ya use — nunca introducir el otro sin acordarlo
 - **API:** si el proyecto expone API, preferir API Platform o controladores con `Serializer` + DTOs explícitos sobre exponer entidades Doctrine directamente
 - **Automatización (headless):** `claude -p "..." --allowedTools "Edit,Bash(git commit *)"` para CI/cron; `--permission-mode auto` para runs desatendidos
+- **LSP (recomendado):** plugin `php-lsp` (Intelephense) — `claude plugin install php-lsp` — da code intelligence real sobre `.php` (goToDefinition, findReferences, hover); requiere `npm install -g intelephense` aparte
 
 ---
 
