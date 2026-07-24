@@ -13,9 +13,9 @@ Todo sprint recibe un árbol de estado — siempre, antes de lanzar agentes y de
 ├── 🧠 skills    — skill1 → skill2 → skill3
 ├── 📊 métricas  — tests X→Y · PHPStan 0 errores · build ✅
 │
-├── ✅🐘 archivo.php      — resumen de una línea de lo hecho
-├── 🔄⚡ archivo.js       — descripción breve de la tarea
-├── ❌🍃 archivo.html.twig — descripción breve de la tarea
+├── 🐘 archivo.php        — resumen de una línea de lo hecho (completado)
+├── 🔄⚡ archivo.js       — descripción breve de la tarea (en progreso)
+├── ❌🍃 archivo.html.twig — descripción breve de la tarea (fallido)
 └── 🔒 adversarial       — alcance de la revisión de seguridad final
 ```
 
@@ -23,13 +23,13 @@ Las tres etiquetas de metadata (`agentes`/`skills`/`métricas`) van alineadas al
 
 En filas de archivo se añade un emoji de tipo pegado sin espacio al emoji de estado, según la extensión:
 
-| Extensión | Emoji | Ejemplo |
-|---|---|---|
-| `.php` | 🐘 (elePHPant) | `✅🐘`, `🔄🐘`, `❌🐘` |
-| `.js` | ⚡ | `✅⚡`, `🔄⚡`, `❌⚡` |
-| `.twig` | 🍃 | `✅🍃`, `🔄🍃`, `❌🍃` |
+| Extensión | Emoji | `🔄` / `❌` | `✅` completado |
+|---|---|---|---|
+| `.php` | 🐘 (elePHPant) | `🔄🐘`, `❌🐘` | `🐘` solo (sin `✅`) |
+| `.js` | ⚡ | `🔄⚡`, `❌⚡` | `⚡` solo (sin `✅`) |
+| `.twig` | 🍃 | `🔄🍃`, `❌🍃` | `🍃` solo (sin `✅`) |
 
-Otras extensiones (CSS, YAML, etc.) usan solo el emoji de estado, sin emoji de tipo.
+Cuando el archivo está completo, el emoji de tipo reemplaza a `✅` (no se combinan) — el tipo ya implica que terminó bien. En `🔄`/`❌` sí se combinan ambos emojis, porque ahí el estado no es obvio por sí solo. Otras extensiones (CSS, YAML, etc.) siguen usando `✅`/`🔄`/`❌` normal, sin emoji de tipo.
 
 ## Orden de filas (fijo — siempre en esta secuencia)
 
@@ -46,9 +46,9 @@ Otras extensiones (CSS, YAML, etc.) usan solo el emoji de estado, sin emoji de t
 - **🔄** — en progreso / esperando
 - **❌** — fallido / bloqueado
 - **🔒** — revisión adversarial de seguridad (siempre la última fila)
-- **🐘** — marca archivos `.php` (elePHPant); se pega sin espacio al emoji de estado, nunca aparece solo
-- **⚡** — marca archivos `.js`; se pega sin espacio al emoji de estado, nunca aparece solo
-- **🍃** — marca archivos `.twig`; se pega sin espacio al emoji de estado, nunca aparece solo
+- **🐘** — marca archivos `.php` (elePHPant); solo cuando está completado (reemplaza a `✅`); en `🔄`/`❌` se combina (`🔄🐘`/`❌🐘`)
+- **⚡** — marca archivos `.js`; solo cuando está completado (reemplaza a `✅`); en `🔄`/`❌` se combina (`🔄⚡`/`❌⚡`)
+- **🍃** — marca archivos `.twig`; solo cuando está completado (reemplaza a `✅`); en `🔄`/`❌` se combina (`🔄🍃`/`❌🍃`)
 
 ## Reglas
 
@@ -57,6 +57,6 @@ Otras extensiones (CSS, YAML, etc.) usan solo el emoji de estado, sin emoji de t
 - UN solo 😸 en el encabezado del sprint — el resto usa ✅ / 🔄 / ❌ / 🔒
 - Las filas 🤖 / 🧠 / 📊 siempre presentes — usa "—" si aún no se sabe
 - Alinea las etiquetas `agentes`/`skills`/`métricas` a la misma columna (padding tras el emoji) y separa metadata de filas de trabajo con una línea `│` en blanco
-- Archivos `.php`/`.js`/`.twig` llevan su emoji de tipo (`🐘`/`⚡`/`🍃`) pegado al emoji de estado — el resto de extensiones no lo usa
+- Archivos `.php`/`.js`/`.twig` completados muestran solo su emoji de tipo (`🐘`/`⚡`/`🍃`), sin `✅`; en `🔄`/`❌` el emoji de tipo se pega al de estado — el resto de extensiones no usa emoji de tipo
 - Una línea por agente/archivo, descripción ≤50 caracteres
 - `adversarial` siempre tiene su propia fila 🔒 al final
