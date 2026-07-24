@@ -13,12 +13,14 @@ Todo sprint recibe un árbol de estado — siempre, antes de lanzar agentes y de
 ├── 🧠 skills    — skill1 → skill2 → skill3
 ├── 📊 métricas  — tests X→Y · PHPStan 0 errores · build ✅
 │
-├── ✅ archivo.php       — resumen de una línea de lo hecho
+├── ✅🐘 archivo.php      — resumen de una línea de lo hecho
 ├── 🔄 agente_pendiente  — descripción breve de la tarea
 └── 🔒 adversarial       — alcance de la revisión de seguridad final
 ```
 
 Las tres etiquetas de metadata (`agentes`/`skills`/`métricas`) van alineadas al mismo ancho de columna (9 caracteres tras el emoji, incluido el espacio antes de `—`). La línea `│` en blanco separa la metadata del sprint de las filas de trabajo (archivos/agentes) — no lleva emoji ni texto.
+
+En filas de archivo, si la ruta termina en `.php` se añade `🐘` (elePHPant) inmediatamente después del emoji de estado, sin espacio entre ambos: `✅🐘`, `🔄🐘`, `❌🐘`. Archivos que no son `.php` (Twig, JS, CSS, YAML, etc.) usan solo el emoji de estado, sin `🐘`.
 
 ## Orden de filas (fijo — siempre en esta secuencia)
 
@@ -35,6 +37,7 @@ Las tres etiquetas de metadata (`agentes`/`skills`/`métricas`) van alineadas al
 - **🔄** — en progreso / esperando
 - **❌** — fallido / bloqueado
 - **🔒** — revisión adversarial de seguridad (siempre la última fila)
+- **🐘** — marca archivos `.php` (elePHPant); se pega sin espacio al emoji de estado, nunca aparece solo
 
 ## Reglas
 
@@ -43,5 +46,6 @@ Las tres etiquetas de metadata (`agentes`/`skills`/`métricas`) van alineadas al
 - UN solo 😸 en el encabezado del sprint — el resto usa ✅ / 🔄 / ❌ / 🔒
 - Las filas 🤖 / 🧠 / 📊 siempre presentes — usa "—" si aún no se sabe
 - Alinea las etiquetas `agentes`/`skills`/`métricas` a la misma columna (padding tras el emoji) y separa metadata de filas de trabajo con una línea `│` en blanco
+- Archivos `.php` llevan `🐘` pegado al emoji de estado (`✅🐘`/`🔄🐘`/`❌🐘`) — el resto de extensiones no lo usa
 - Una línea por agente/archivo, descripción ≤50 caracteres
 - `adversarial` siempre tiene su propia fila 🔒 al final
