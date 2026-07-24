@@ -21,8 +21,8 @@ rules/
 ├── sprint-status.md               # formato de árbol de estado de sprint
 ├── hooks.md                       # hooks, higiene de CLAUDE.md, automatización headless
 ├── php/symfony.md                 # convenciones Symfony/Doctrine
-├── php/testing.md                 # convenciones PHPUnit
-└── frontend/twig-js.md            # convenciones Twig/Stimulus/JS
+├── php/testing.md                 # convenciones PHPUnit + mutation testing (Infection, modo PR-diff)
+└── frontend/twig-js.md            # convenciones Twig/Stimulus/Turbo/Live & Twig Components
 skills/
 └── parallel-executor/SKILL.md     # controlador de sprint en oleadas paralelas
 ```
