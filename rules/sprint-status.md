@@ -9,13 +9,16 @@ Todo sprint recibe un árbol de estado — siempre, antes de lanzar agentes y de
 
 ```
 😸 Sprint N — activo
-├── 🤖 agentes  — N en paralelo (agente1·agente2·agente3·...)
-├── 🧠 skills   — skill1 → skill2 → skill3
-├── 📊 métricas — tests X→Y · PHPStan 0 errores · build ✅
+├── 🤖 agentes   — N en paralelo (agente1·agente2·agente3·...)
+├── 🧠 skills    — skill1 → skill2 → skill3
+├── 📊 métricas  — tests X→Y · PHPStan 0 errores · build ✅
+│
 ├── ✅ archivo.php       — resumen de una línea de lo hecho
 ├── 🔄 agente_pendiente  — descripción breve de la tarea
 └── 🔒 adversarial       — alcance de la revisión de seguridad final
 ```
+
+Las tres etiquetas de metadata (`agentes`/`skills`/`métricas`) van alineadas al mismo ancho de columna (9 caracteres tras el emoji, incluido el espacio antes de `—`). La línea `│` en blanco separa la metadata del sprint de las filas de trabajo (archivos/agentes) — no lleva emoji ni texto.
 
 ## Orden de filas (fijo — siempre en esta secuencia)
 
@@ -39,5 +42,6 @@ Todo sprint recibe un árbol de estado — siempre, antes de lanzar agentes y de
 - Reconstruye el árbol después de cada oleada completada (la fila de métricas se actualiza con deltas)
 - UN solo 😸 en el encabezado del sprint — el resto usa ✅ / 🔄 / ❌ / 🔒
 - Las filas 🤖 / 🧠 / 📊 siempre presentes — usa "—" si aún no se sabe
+- Alinea las etiquetas `agentes`/`skills`/`métricas` a la misma columna (padding tras el emoji) y separa metadata de filas de trabajo con una línea `│` en blanco
 - Una línea por agente/archivo, descripción ≤50 caracteres
 - `adversarial` siempre tiene su propia fila 🔒 al final
