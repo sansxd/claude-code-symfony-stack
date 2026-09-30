@@ -1,6 +1,15 @@
+---
+paths:
+  - "src/Controller/**"
+  - "src/Entity/**"
+  - "src/Service/**"
+  - "src/Repository/**"
+  - "migrations/**"
+---
+
 # Convenciones Symfony 6.4/8 · PHP 8.3/8.4 · Doctrine
 
-**Alcance de la regla:** se carga bajo demanda al tocar `src/Controller/**`, `src/Entity/**`, `src/Service/**`, `migrations/**`.
+**Alcance de la regla:** se carga bajo demanda al tocar `src/Controller/**`, `src/Entity/**`, `src/Service/**`, `src/Repository/**`, `migrations/**`.
 
 ## Detección de versión — primer paso, siempre
 Antes de escribir un patrón, confirma con qué versión real trabaja el proyecto:
@@ -38,6 +47,92 @@ vendor/bin/rector process              # aplica tras revisar
 
 ## Atributos, no anotaciones
 Ambas versiones usan atributos nativos: `#[Route(...)]`, `#[ORM\Entity]`, `#[AsEventListener]`, `#[AsMessageHandler]`. Nunca vuelvas a las anotaciones de doc-comment estilo Symfony 4. En Symfony 8 los atributos se extienden también a comandos de consola y extensiones Twig con sintaxis más expresiva — revisa la implementación existente en el proyecto antes de asumir la forma exacta.
+
+## Estilo de código — property promotion, early return, excepciones
+
+- **Constructor property promotion (PHP 8.2+):** declara e inyecta dependencias directamente en la firma del constructor, no en propiedades separadas asignadas a mano.
+
+```php
+// Evitar
+class PriceCalculator
+{
+    private TaxService $taxService;
+    public function __construct(TaxService $taxService)
+    {
+        $this->taxService = $taxService;
+    }
+}
+
+// Preferir
+class PriceCalculator
+{
+    public function __construct(
+        private readonly TaxService $taxService,
+    ) {}
+}
+```
+
+- **Early return — evita `else`/`elseif` tras un `return`/`throw`:** invierte la condición y retorna/lanza temprano en vez de anidar la rama feliz dentro de un `else`.
+
+```php
+// Evitar
+public function getDiscount(Order $order): float
+{
+    if ($order->isVip()) {
+        return 0.20;
+    } else {
+        return 0.0;
+    }
+}
+
+// Preferir
+public function getDiscount(Order $order): float
+{
+    if (!$order->isVip()) {
+        return 0.0;
+    }
+    return 0.20;
+}
+```
+
+- **Formato de mensajes de excepción:** mayúscula inicial, punto final, sin backticks; usa `sprintf()` con `get_debug_type()` (no `get_class()`) para nombrar tipos, porque `get_debug_type()` no rompe con valores escalares (`int`, `null`, arrays).
+
+```php
+// Evitar
+throw new \InvalidArgumentException("expected `Order`, got " . get_class($value));
+
+// Preferir
+throw new \InvalidArgumentException(sprintf(
+    'Expected instance of Order, got %s.',
+    get_debug_type($value)
+));
+```
+
+- **`return null;` vs `return;`:** en un método con tipo de retorno nullable usa `return null;` explícito; en un método `void` usa `return;` sin valor. No mezcles ambos estilos para la misma intención.
+
+- **Métodos nuevos van al final de la clase:** al agregar un método a una clase PHP existente (repositorio, servicio, controlador, entidad, etc.), insértalo después del último método preexistente — nunca al principio del cuerpo de la clase.
+
+- **Excepciones siempre manejadas explícitamente:** ningún `catch` vacío ni que solo silencie el error. Si de verdad no hay nada que hacer con la excepción, relanza o al menos loguea — un catch vacío esconde fallos reales en producción.
+
+```php
+// Evitar
+try {
+    $this->externalApi->sync($order);
+} catch (\Throwable $e) {
+}
+
+// Preferir
+try {
+    $this->externalApi->sync($order);
+} catch (\Throwable $e) {
+    $this->logger->error('Order sync failed.', ['order' => $order->getId(), 'exception' => $e]);
+    throw $e;
+}
+```
+
+- **PHPDoc:** sin docblocks de una sola línea (si no aporta tipo ni contexto que la firma no diga ya, no lo escribas); nunca `@return` en métodos `void`; anotaciones agrupadas por tipo (`@param` juntos, luego `@throws`, etc.), no intercaladas.
+
+- **Comentarios:** solo para lo no obvio, empiezan en minúscula, sin punto final, nunca como separador de sección (`// === Métodos de dashboard ===`) — si sientes la necesidad de separar visualmente un archivo con comentarios, es señal de que esa clase debería dividirse.
 
 ## Doctrine — migraciones
 - `doctrine:migrations:diff` genera la migración a partir del mapeo de entidades. **Nunca editar a mano una migración ya aplicada en cualquier entorno** — genera una nueva migración correctiva.

@@ -15,6 +15,7 @@ Antes de emitir veredicto, lee:
 - El diff exacto a revisar (`git diff <base>..<head>`), nunca el árbol completo si no hace falta
 - El task-brief original para verificar cumplimiento de spec
 - `~/.claude/rules/php/symfony.md` para checklist de gotchas conocidos del stack
+- `~/.claude/rules/frontend/twig-js.md` si el diff toca Twig/Stimulus/assets
 
 ## 3 · HEURÍSTICAS DE DISPARO
 Entra en acción: tras cada diseño de `architect` (antes de codear), tras cada commit de `backend-expert`/`frontend-expert`/`drafter` (antes de mergear), y en modo diagnóstico cuando se pide depurar un fallo sin proponer fix todavía.
