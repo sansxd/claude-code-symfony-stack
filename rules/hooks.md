@@ -1,3 +1,9 @@
+---
+paths:
+  - "**/settings.json"
+  - ".claude/settings.local.json"
+---
+
 # Hooks — Detalle Técnico
 
 **Alcance de la regla:** se carga bajo demanda al editar `~/.claude/settings.json`, `.claude/settings.json` de proyecto, o al escribir hooks nuevos.

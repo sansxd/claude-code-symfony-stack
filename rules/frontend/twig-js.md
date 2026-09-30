@@ -1,3 +1,9 @@
+---
+paths:
+  - "templates/**"
+  - "assets/**"
+---
+
 # Convenciones Twig / Symfony UX / JavaScript
 
 **Alcance de la regla:** se carga bajo demanda al tocar `templates/**`, `assets/**`.
@@ -18,6 +24,10 @@ Symfony 6.4 soporta tanto Webpack Encore como AssetMapper. **Confirma cuál usa 
 - Con Turbo Drive, `connect()` puede ejecutarse **más de una vez** para el mismo controller (no asumas ciclo de vida de SPA de un solo montaje).
 - Values y action params siempre llegan como string desde el DOM: `""` no se castea a `false` en un value `Boolean`, un `data-*-value` con JSON malformado falla en silencio, y un action param `"123"` nunca es `123` — castea explícitamente en el controller.
 - Un controller anidado (hijo) bloquea el acceso del controller padre a los targets declarados dentro del scope del hijo — si el padre necesita ese elemento, decláralo como target propio, no dependas del scope del hijo.
+- **Lazy loading:** si el controller se usa en pocas vistas (widget pesado y poco frecuente — editor WYSIWYG, date picker, mapa), márcalo lazy para no descargar su JS en páginas donde no aparece:
+  - **AssetMapper** (`symfony/stimulus-bundle`): agrega `/* stimulusFetch: 'lazy' */` como primera línea literal del archivo, antes de cualquier `import`.
+  - **Webpack Encore** (`@symfony/stimulus-bridge`): marca `"fetch": "lazy"` en la entrada correspondiente de `assets/controllers.json`, no un comentario en el archivo.
+  - No lo apliques a controllers que aparecen en casi todas las vistas (navbar, layout base) — ahí el roundtrip de dynamic import solo agrega latencia sin ahorrar nada.
 
 ## Turbo
 - Turbo Frames para actualizar una sección sin recargar toda la página; Turbo Streams para respuestas que actualizan múltiples fragmentos tras una acción (crear/borrar).
@@ -43,8 +53,14 @@ Symfony 6.4 soporta tanto Webpack Encore como AssetMapper. **Confirma cuál usa 
 - No uses LiveComponent para interactividad puramente client-side (toggle de un menú, animación) — ahí Stimulus solo es más simple y no paga el costo de un roundtrip AJAX.
 - `DefaultActionTrait` es obligatorio en todo componente Live, no opcional — sin él, las acciones (`#[LiveAction]`) no se resuelven.
 - `data-live-ignore` en un elemento evita que Live Components lo destruya en cada re-render — indispensable para widgets de terceros (date pickers, editores WYSIWYG) inicializados por JS externo. `data-live-id` en items de una lista mejora el morphing (evita que se recree el DOM completo cuando solo cambió un item).
-- `emit()` hace broadcast del evento a cualquier listener; `emitUp()` lo entrega solo al componente padre — confundirlos causa que un listener no reciba el evento o que se disparen handlers de más.
+- `emit()` hace broadcast del evento a cualquier listener; `emitUp()` lo entrega solo al componente padre; `emitTo('nombre-componente', 'evento', [...])` lo dirige a un componente específico por nombre — confundir los tres causa que un listener no reciba el evento o que se disparen handlers de más.
+- `#[LiveListener('evento')]` en un método del componente padre es el lado receptor de `emit()`/`emitUp()`/`emitTo()` — sin este atributo el evento se emite pero nadie lo escucha.
 - `url: true` por sí solo no actualiza el botón atrás/adelante del navegador — para eso necesita además `#[LiveProp(writable: true, url: new UrlMapping(history: 'push'))]`.
+- `#[LiveProp(onUpdated: 'metodo')]` ejecuta un callback cuando el prop cambia entre renders — útil para resetear estado dependiente (ej. volver a la página 1 cuando cambia el término de búsqueda).
+- Si el nombre del parámetro de una `#[LiveAction]` no coincide con el dato enviado desde la plantilla, decláralo explícito con `#[LiveArg('nombre')]` — sin esto el argumento llega `null` en silencio.
+- Si la entidad Doctrine detrás de un `LiveProp` fue borrada entre requests, la rehidratación por ID falla — usa una propiedad nullable o guarda el ID y resuélvela con un getter en vez de depender de la auto-hidratación.
+- `submitForm()` no valida por sí solo — hay que llamarlo explícitamente antes de chequear `getForm()->isValid()`; y una propiedad que cambia entre renders no debe usarse como dato inicial del formulario porque se desincroniza del estado ya enviado.
+- Estados de carga vía `data-loading` en la plantilla: `data-loading="show"`/`"hide"` para mostrar/ocultar mientras una acción está en curso, `data-loading="attr(disabled)"` para deshabilitar un botón, `data-loading="addClass(clase)"` para aplicar una clase CSS temporal — evita tener que cablear esto a mano con Stimulus.
 
 ## Formularios
 - Usa `form_start()/form_end()` y los helpers de tema de formulario de Symfony — no reconstruyas manualmente el HTML de un `FormType` ya generado por el framework.

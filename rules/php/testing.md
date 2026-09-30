@@ -1,3 +1,8 @@
+---
+paths:
+  - "tests/**"
+---
+
 # Convenciones de Testing — PHPUnit / Symfony
 
 **Alcance de la regla:** se carga bajo demanda al tocar `tests/**` o al escribir un test nuevo.

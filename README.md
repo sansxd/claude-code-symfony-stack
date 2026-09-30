@@ -20,9 +20,9 @@ rules/
 ├── workflows.md                   # equipos estándar + patrones de oleadas paralelas
 ├── sprint-status.md               # formato de árbol de estado de sprint
 ├── hooks.md                       # hooks, higiene de CLAUDE.md, automatización headless
-├── php/symfony.md                 # convenciones Symfony/Doctrine
+├── php/symfony.md                 # convenciones Symfony/Doctrine + estilo de código PHP
 ├── php/testing.md                 # convenciones PHPUnit + mutation testing (Infection, modo PR-diff)
-└── frontend/twig-js.md            # convenciones Twig/Stimulus/Turbo/Live & Twig Components
+└── frontend/twig-js.md            # convenciones Twig/Stimulus (lazy)/Turbo/Live & Twig Components
 skills/
 └── parallel-executor/SKILL.md     # controlador de sprint en oleadas paralelas
 ```
@@ -76,4 +76,5 @@ npm install -g intelephense   # requerido por el plugin, se instala aparte
 
 - Los 6 agentes están recortados para este stack — 100% ámbito PHP/Symfony, sin agentes de otros dominios.
 - `parallel-executor` reemplaza `superpowers:subagent-driven-development` (que fuerza despacho secuencial) — dispara oleadas paralelas de agentes agrupadas por solapamiento de archivos.
-- Ver `CLAUDE.md` → sección "REGLAS NO NEGOCIABLES" para el detalle de mínimo 3 / objetivo 5 agentes en paralelo por tarea.
+- Ver `CLAUDE.md` → sección "REGLAS NO NEGOCIABLES" para el detalle de mínimo 3 / objetivo 5 agentes en paralelo por tarea, commit único al final de la tarea (push automático solo en `feature/*`), nunca commit directo en `main`/`master` y migraciones nunca automáticas fuera de local.
+- `rules/hooks.md`, `rules/php/*.md` y `rules/frontend/twig-js.md` llevan frontmatter `paths:` — Claude Code las carga solo cuando se tocan archivos que matchean esos globs.

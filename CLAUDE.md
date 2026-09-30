@@ -21,13 +21,16 @@ Luego lee `~/.claude/projects/.../memory/MEMORY.md` para contexto de sesión.
 
 1. **Agentes en paralelo — mínimo 3, objetivo 5, máximo 8 por tarea.** Respuestas en solitario en tareas de código = sesión fallida. El arranque de sesión debe lanzar `adversarial` (modo diagnóstico de solo lectura) + `architect` en paralelo antes de escribir código.
 2. **Superpowers + parallel-executor obligatorio.** Tras `superpowers:writing-plans`, invocar inmediatamente el skill `parallel-executor` — nunca ejecución secuencial inline, nunca `superpowers:subagent-driven-development` (fuerza despacho secuencial). Usa task-briefs + ledger de progreso + paquete de revisión.
-3. **Push tras cada commit.** `git commit` → `git push origin <branch>` inmediatamente. Si falla el hook de pre-push: `php-cs-fixer fix` + `phpstan analyse`, re-stage, commit de corrección, reintentar. Nunca `--no-verify`.
-4. **TDD.** Red → Green → Refactor con PHPUnit. Test en rojo escrito ANTES que la implementación, siempre.
+3. **Un solo commit al final de la tarea.** No comitear por archivo ni por oleada intermedia — se acumulan los cambios y se comitea todo junto cuando la tarea completa está lista. Tras ese commit final: `git push --set-upstream origin <branch>` automático **solo si la rama actual matchea `feature/*`** — el `--set-upstream` deja la rama local trackeando `origin/<branch>` para que los push/pull siguientes no necesiten especificar remoto/rama. En `main`/`master` (o cualquier rama que no sea `feature/*`) nunca se pushea automático — se avisa y se espera confirmación explícita. Si falla el hook de pre-push: `php-cs-fixer fix` + `phpstan analyse`, re-stage, commit de corrección, reintentar. Nunca `--no-verify`.
+4. **TDD.** Red → Green → Refactor con PHPUnit. Test en rojo escrito ANTES que la implementación — salvo excepción explícita del punto siguiente.
+4b. **Preguntar una sola vez por tarea si se requieren tests.** Al inicio de una tarea, si no es obvio que necesita test nuevo (arreglo pequeño), preguntar una vez si la tarea lo requiere. Una vez que el usuario confirma que sí, todas las creaciones/modificaciones/ediciones de archivos de test PHPUnit (`tests/**/*Test.php`) dentro de esa misma tarea se aceptan sin volver a preguntar — no repetir la pregunta por cada archivo de test.
 5. **Entorno local.** `symfony serve -d` como opción por defecto; `docker compose up --build` si el proyecto define `compose.yaml`. Nunca `php -S` en producción ni como sustituto silencioso del entorno del equipo.
 6. **Disciplina de shell.** Todo comando Bash visible termina en ≤10 min o usa límites de salida. Procesos largos van a background — nunca esperados en sesión. Mata procesos huérfanos de inmediato.
 7. **Compromiso de estrategia de ejecución.** Una vez elegido subagentes-en-paralelo para un sprint, se mantiene todo el sprint. Corrige la causa raíz de permisos en `~/.claude/settings.json`, no cambies de estrategia.
 8. **Cierre de sprint frontend.** Todo sprint que toque Twig/JS termina con evidencia visual (captura o prueba e2e con Symfony Panther/Playwright) del cambio antes de darlo por terminado.
 9. **NUNCA uses `general-purpose` como implementador del parallel-executor.** Elige el experto correcto (ver ruteo abajo) o usa `drafter` como respaldo.
+10. **Nunca commit directo en `main`/`master`.** Todo cambio de código se trabaja en rama `feature/*` o `fix/*` — si no existe, se crea antes de comitear. `main`/`master` solo recibe cambios vía merge/PR, nunca un commit directo.
+11. **Migraciones Doctrine nunca corren solas fuera de local.** `doctrine:migrations:migrate` en cualquier entorno que no sea local (staging, producción) requiere confirmación explícita del usuario antes de ejecutarse — nunca automático dentro de un sprint.
 
 ---
 
