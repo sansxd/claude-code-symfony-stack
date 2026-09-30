@@ -46,6 +46,20 @@ Nunca `--no-verify` salvo que el usuario lo pida explícitamente.
 ### Stop hook — gate de verificación
 Script de verificación que bloquea el fin de turno hasta que pasa. El gate más fuerte para corridas desatendidas — evita que Claude declare completitud mientras los validadores siguen fallando.
 
+## Permisos recomendados — proteger secretos
+
+En `permissions.deny` de `~/.claude/settings.json`:
+
+```json
+"Read(**/.env.local*)",
+"Read(**/.env.*.local)",
+"Read(**/config/secrets/*/*.decrypt.private.php)"
+```
+
+- Bloquea `.env.local`, `.env.local.php` (`composer dump-env`), `.env.<entorno>.local` y la clave privada del Secrets Vault — `.env`, `.env.example` y los secretos cifrados del vault siguen legibles.
+- `deny` sobre `Read` no cubre `cat`/`grep` vía Bash — es una barrera contra lecturas accidentales, no un sandbox.
+- Sintaxis: `Bash(php *)`, nunca `php:*` suelto (no es válido en Claude Code).
+
 ## Recetas de automatización (headless)
 
 - `claude -p "prompt"` — no interactivo, para CI/cron/scripts

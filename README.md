@@ -72,6 +72,24 @@ claude plugin install php-lsp
 npm install -g intelephense   # requerido por el plugin, se instala aparte
 ```
 
+## Herramienta recomendada por proyecto — Symfony Mate
+
+[Symfony Mate](https://symfony.com/doc/current/ai/components/mate.html) (`symfony/ai-mate`, PHP ≥8.2, Symfony 5.4/6.4/7.3/8) le da al agente acceso al profiler, logs de Monolog y contenedor compilado de la app real vía CLI:
+
+```bash
+composer require --dev symfony/ai-mate symfony/ai-symfony-mate-extension symfony/ai-monolog-mate-extension
+vendor/bin/mate init
+composer dump-autoload
+vendor/bin/mate discover
+```
+
+- Todavía es 0.x — la API puede cambiar entre versiones.
+- `mate discover` instala skills oficiales en `.agents/skills/` y los replica en `.claude/skills/` con prefijo `mate-` (no chocan con `parallel-executor`): `symfony-request-triage`, `symfony-profiler-debugging`, `symfony-service-inspection`, `symfony-dotenv-diagnostics` y `symfony-log-investigation` (Monolog). Son salida generada — no se editan a mano; `vendor/bin/mate skills:disable <nombre>` para apagar uno.
+- `mate init` genera/modifica `AGENTS.md` y `CLAUDE.md` en la raíz del proyecto — si ya copiaste el `CLAUDE.md` de este repo ahí, revisa el diff y conserva ambos bloques.
+- Revisa y comitea `mate/extensions.php`: todo paquete con `extra.ai-mate` se habilita solo.
+- Agrega `Bash(vendor/bin/mate *)` a `permissions.allow` para no autorizar cada llamada.
+- Si lo que quieres es que tu app **exponga** tools propios (no solo depurarla), eso es otra pieza: `symfony/mcp-bundle` con `#[McpTool]`, servido por `bin/console mcp:server <nombre>` (stdio) o HTTP — es código de producción y va con su propio diseño de seguridad.
+
 ## Notas
 
 - Los 6 agentes están recortados para este stack — 100% ámbito PHP/Symfony, sin agentes de otros dominios.
