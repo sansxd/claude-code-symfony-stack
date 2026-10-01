@@ -46,17 +46,21 @@ Nunca `--no-verify` salvo que el usuario lo pida explícitamente.
 ### Stop hook — gate de verificación
 Script de verificación que bloquea el fin de turno hasta que pasa. El gate más fuerte para corridas desatendidas — evita que Claude declare completitud mientras los validadores siguen fallando.
 
-## Permisos recomendados — proteger secretos
+## Permisos recomendados — proteger secretos de producción
 
 En `permissions.deny` de `~/.claude/settings.json`:
 
 ```json
-"Read(**/.env.local*)",
-"Read(**/.env.*.local)",
-"Read(**/config/secrets/*/*.decrypt.private.php)"
+"Read(**/.env.prod.local)",
+"Read(**/.env.staging.local)",
+"Read(**/.env.local.php)",
+"Read(**/config/secrets/prod/*.decrypt.private.php)",
+"Read(**/config/secrets/staging/*.decrypt.private.php)"
 ```
 
-- Bloquea `.env.local`, `.env.local.php` (`composer dump-env`), `.env.<entorno>.local` y la clave privada del Secrets Vault — `.env`, `.env.example` y los secretos cifrados del vault siguen legibles.
+- Bloquea solo lo que apunta a staging/producción: overrides `.env.<prod|staging>.local`, `.env.local.php` (`composer dump-env prod`) y las claves privadas del Secrets Vault de esos entornos.
+- `.env`, `.env.local`, `.env.dev.local`, `.env.test.local` y el vault de `dev` siguen legibles — son config de desarrollo local y el agente los necesita para diagnosticar (DSN de MySQL/Redis/RabbitMQ locales).
+- Claude Code no distingue entornos: el filtro es por nombre de archivo. Si un `.env.local` contiene credenciales reales de producción, el problema es ese archivo — muévelas al vault de `prod`.
 - `deny` sobre `Read` no cubre `cat`/`grep` vía Bash — es una barrera contra lecturas accidentales, no un sandbox.
 - Sintaxis: `Bash(php *)`, nunca `php:*` suelto (no es válido en Claude Code).
 
