@@ -24,6 +24,7 @@ rules/
 skills/
 ├── parallel-executor/SKILL.md     # controlador de sprint en oleadas paralelas
 ├── symfony-debug/SKILL.md         # diagnóstico de la app real: logs, profiler, servicios, .env (Mate o bin/console)
+├── symfony-upgrade/SKILL.md       # upgrade de Symfony: línea base, dry-run revisado, comparación antes/después
 └── sprint-workflow/
     ├── SKILL.md                   # equipos estándar + patrones de oleadas (solo tareas complejas)
     └── sprint-status.md           # formato de árbol de estado de sprint
