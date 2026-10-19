@@ -29,7 +29,7 @@ skills/
     ├── SKILL.md                   # equipos estándar + patrones de oleadas (solo tareas complejas)
     └── sprint-status.md           # formato de árbol de estado de sprint
 hooks/
-├── session-start.sh               # SessionStart: rama, commits, status, versión Symfony/PHP, herramientas
+├── session-start.sh               # SessionStart: rama, commits, status, versión Symfony/PHP, herramientas, composer audit (1×/día)
 ├── post-edit.sh                   # PostToolUse: php-cs-fixer solo en archivos nuevos o que ya cumplían en HEAD
 └── stop-phpstan.sh                # Stop: PHPStan sobre los .php editados (respeta phpstan-baseline.neon)
 settings/
