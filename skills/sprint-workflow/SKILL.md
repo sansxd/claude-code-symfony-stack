@@ -1,23 +1,21 @@
+---
+name: sprint-workflow
+description: "Equipos de expertos y patrones de oleadas paralelas para sprints. Úsalo cuando la tarea toca 3+ archivos, cruza backend y frontend (PHP + Twig/JS) o requiere decisiones de diseño (endpoint/entidad nueva, cambio de contrato), una auditoría + cableado de N archivos, o cuando el usuario diga 'inicia el sprint' / 'implementa el plan'. NO lo uses para preguntas, explicaciones, cambios de config ni fixes de 1-2 archivos."
+---
+
 # Equipos de Trabajo Estándar + Patrones de Oleadas Paralelas
 
-**Alcance de la regla:** se carga bajo demanda para planificación de sprint y decisiones de despacho multiagente.
+Este skill aplica solo a tareas complejas (criterio en la regla 1 de `~/CLAUDE.md`: 3+ archivos, backend + frontend, o decisiones de diseño). El árbol de estado de sprint está en `sprint-status.md` junto a este archivo — léelo antes de imprimir el primer árbol.
 
 ## Agentes en paralelo — Grupo de Expertos
 
-**Mínimo 3 agentes por tarea. Objetivo por defecto: 5. Máximo: 8 simultáneos.** Las respuestas de un solo agente son la excepción. Siempre descompón. Paralelo es lo normal.
-
-### Arranque de sesión (obligatorio — primera respuesta de cada sesión)
-Lanza `adversarial` (modo diagnóstico de solo lectura) + `architect` en paralelo antes de escribir código. Si el usuario da una tarea directa, descompónla en ≥3 workstreams paralelos primero.
-
-### Autochequeos (no negociables)
-- **Antes de cada respuesta:** "¿Estoy por hacer esto solo? Si sí, DETENTE — descompón en agentes primero. Incluso un fix de un solo archivo lleva: implementador + validate corriendo simultáneamente."
-- **Antes de cada despacho de oleada:** "¿Estoy despachando UN agente cuando podría despachar TRES? Escanea todas las tareas restantes. Si 3 son independientes, las 3 se disparan en la misma oleada AHORA."
-
-Actividad paralela visible (múltiples agentes corriendo simultáneamente) es un requisito duro, no una preferencia de estilo.
+- **Tamaño del equipo según la tarea:** tantos agentes como workstreams independientes haya — típico 3-5, máximo 8 simultáneos. No inventes workstreams para llegar a un número.
+- **Arranque del sprint:** `architect` descompone + `adversarial` ataca el diseño (en paralelo) antes de escribir código.
+- **Antes de cada despacho de oleada:** escanea todas las tareas restantes; si varias son independientes, se disparan en la misma oleada.
 
 ### Paralelizar vs secuencial
 - **Paralelizar:** diseño + implementación de módulos independientes | auditoría + test + lint | `adversarial` corre junto a cada sprint
-- **Solo secuencial cuando:** la Tarea B necesita el output de la Tarea A | dos agentes escriben el mismo archivo
+- **Secuencial cuando:** la Tarea B necesita el output de la Tarea A | dos agentes escriben el mismo archivo | refactors que tocan archivos compartidos (renombres, mover namespaces) — ahí usa secuencial o un worktree por agente
 
 ## Equipos estándar
 
@@ -25,7 +23,7 @@ Actividad paralela visible (múltiples agentes corriendo simultáneamente) es un
 - **Feature de frontend:** `frontend-expert` + `adversarial` (paralelo) → `writing-plans` → `parallel-executor` → `validate` → commit (evidencia visual la entrega `frontend-expert` mismo)
 - **Feature fullstack:** `frontend-expert` + `backend-expert` + `adversarial` (todos en paralelo, sin overlap de archivos) → `writing-plans` → `parallel-executor` → `validate` → commit
 - **Entidad Doctrine + migración:** `backend-expert` (entidad + migración) + `adversarial` (diseño, en paralelo) → `writing-plans` → `parallel-executor` → `validate`
-- **Depurar test que falla:** `adversarial` (diagnóstico de solo lectura) + `adversarial` (hipótesis ciega, en paralelo) → `validate` sobre el fix
+- **Depurar test que falla (no obvio):** `adversarial` (diagnóstico de solo lectura) + `adversarial` (hipótesis ciega, en paralelo) → `validate` sobre el fix
 - **Archivo sin dueño exacto (script, DTO puro):** `drafter` (TDD) → `adversarial` → `validate`
 
 ## Patrón de oleada paralela — auditoría + cableado masivo
@@ -54,7 +52,7 @@ Track de documentación:
 **Resolución de conflicto:** si la Oleada 1 revela que dos archivos deben tocar el mismo servicio compartido, cablearlos secuencialmente en la Oleada 4 — no bloquees toda la oleada.
 **Máximo de agentes paralelos por oleada:** 5 (techo de costo). Divide en sub-oleadas si N > 5.
 
-## Reglas de despacho paralelo (no negociables)
+## Reglas de despacho paralelo
 
 Antes de despachar CUALQUIER implementador, `parallel-executor` escanea TODAS las tareas restantes y las agrupa por solapamiento de archivos en oleadas. Todos los implementadores de una oleada se disparan simultáneamente en un solo mensaje.
 
@@ -64,25 +62,16 @@ Dos patrones obligatorios:
 
 Secuencial SOLO cuando: (a) el task-brief dice explícitamente "prerequisite: Task N", o (b) dos tareas escriben el mismo archivo.
 
-## Disparadores de skills — obligatorios en sesión
+## Skills de Superpowers en un sprint
 
-- **Inicio de cualquier sprint** → `parallel-executor` se dispara después de `writing-plans`, antes de escribir código. Nunca uses `superpowers:subagent-driven-development` — fuerza despacho secuencial y anula las reglas de oleada paralela.
-- Skills visibles en pantalla = buena sesión. Cero skills usados = sesión fallida.
+Las fases de Superpowers (clarificar → worktree → plan → dev con subagentes → TDD → code-review → cerrar rama) mapean sobre el flujo del Grupo de Expertos. Úsalas cuando aportan, no como checklist ceremonial:
 
-## Mapa de flujo de Superpowers
-
-Las fases de Superpowers (clarificar → worktree → plan → dev con subagentes → TDD → code-review → cerrar rama) mapean directamente sobre el flujo del Grupo de Expertos — se complementan, nunca lo reemplazan.
-
-Claude las invoca automáticamente — el usuario nunca las escribe:
-
-- `superpowers:brainstorming` — cualquier feature/build nueva, ANTES de que `architect` descomponga
-- `superpowers:systematic-debugging` — cualquier bug/test fallido, ANTES de proponer fixes
+- `superpowers:brainstorming` — feature nueva con requisitos poco claros, ANTES de que `architect` descomponga
 - `superpowers:writing-plans` — feature multi-sprint con spec, ANTES de tocar código
-- `parallel-executor` — OBLIGATORIO en cada sprint, inmediatamente después de `writing-plans`, antes de escribir código — dispara todas las tareas independientes simultáneamente por oleada, reutiliza scripts de SDD (task-brief, review-package, ledger de progreso) — NUNCA uses `superpowers:subagent-driven-development` (fuerza despacho secuencial)
+- `parallel-executor` — inmediatamente después de `writing-plans`, antes de escribir código. NUNCA uses `superpowers:subagent-driven-development` (fuerza despacho secuencial)
 - `superpowers:executing-plans` — retomar un plan escrito entre sesiones
 - `superpowers:test-driven-development` — ANTES de escribir código de implementación
-- `superpowers:verification-before-completion` — ANTES de declarar cualquier trabajo terminado o comitear
-- `superpowers:dispatching-parallel-agents` — cuando existen 2+ tareas independientes
+- `superpowers:verification-before-completion` — ANTES de declarar el sprint terminado o comitear
 - `superpowers:requesting-code-review` — tras completar una feature mayor, antes de mergear
 
 ## Compromiso de estrategia de ejecución

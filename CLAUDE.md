@@ -6,21 +6,31 @@ Tech lead senior fullstack PHP. Equilibra costo, seguridad, escalabilidad y velo
 ---
 
 ## INICIO RÁPIDO — cada sesión nueva
-```bash
-git log --oneline -3                              # orientarse al último sprint
-git status                                          # trabajo en curso
-composer show symfony/framework-bundle | grep versions   # ¿Symfony 6.4 o 8.x?
-php -v                                              # ¿PHP 8.3 o 8.4?
-php bin/phpunit --testdox                           # conteo base de tests
-```
-Luego lee `~/.claude/projects/.../memory/MEMORY.md` para contexto de sesión.
+El hook `SessionStart` (`~/.claude/hooks/session-start.sh`) ya inyecta rama, últimos 3 commits, `git status`, versión de Symfony/PHP y herramientas disponibles — no repetir esos comandos. Si el bloque "Contexto del proyecto" no aparece, correrlos a mano.
+La línea base de tests (`php bin/phpunit --testdox`) se toma solo al iniciar un sprint, no en cada sesión.
+
+Hooks activos: `post-edit.sh` (php-cs-fixer solo en archivos nuevos o que ya cumplían el estándar) y `stop-phpstan.sh` (PHPStan sobre los `.php` editados al terminar el turno; respeta `phpstan-baseline.neon`).
 
 ---
 
 ## REGLAS NO NEGOCIABLES
 
-1. **Agentes en paralelo — mínimo 3, objetivo 5, máximo 8 por tarea.** Respuestas en solitario en tareas de código = sesión fallida. El arranque de sesión debe lanzar `adversarial` (modo diagnóstico de solo lectura) + `architect` en paralelo antes de escribir código.
-2. **Superpowers + parallel-executor obligatorio.** Tras `superpowers:writing-plans`, invocar inmediatamente el skill `parallel-executor` — nunca ejecución secuencial inline, nunca `superpowers:subagent-driven-development` (fuerza despacho secuencial). Usa task-briefs + ledger de progreso + paquete de revisión.
+1. **Esfuerzo proporcional a la tarea.** El proceso escala con el tamaño real del trabajo — nunca ceremonia por defecto:
+
+   | Tarea | Cómo se trabaja |
+   |---|---|
+   | Pregunta, explicación, cambio de config | Directo. Sin agentes ni skills obligatorios |
+   | Fix chico (1-2 archivos, causa clara) | Directo + `validate` antes de dar por terminado |
+   | Bug no obvio / test que falla sin causa clara | `superpowers:systematic-debugging`; `adversarial` en diagnóstico si hace falta |
+   | Tarea compleja (ver criterio abajo) | Skill `sprint-workflow` — equipo de expertos en paralelo (máx 8) |
+
+   **Criterio de tarea compleja** — basta con que se cumpla UNO:
+   - toca **3+ archivos** (ej. controller + servicio + DTO + test)
+   - cruza **backend y frontend** (PHP + Twig/JS)
+   - requiere **decisiones de diseño** (entidad/migración nueva, endpoint nuevo, cambio de contrato, seguridad)
+
+   Ejemplos directos (sin agentes): guard anti-multiclic en un modal (1 Twig), corregir una query en un repositorio, cambiar un texto o clase CSS, explicar código. Antes de codear un fix chico, busca si el proyecto ya resuelve el mismo problema en otro lado y reutilízalo. Ante la duda entre dos niveles, elige el menor y escala si aparece complejidad.
+2. **En sprints: Superpowers + parallel-executor.** Tras `superpowers:writing-plans`, invocar inmediatamente el skill `parallel-executor` — nunca `superpowers:subagent-driven-development` (fuerza despacho secuencial). Usa task-briefs + ledger de progreso + paquete de revisión.
 3. **Un solo commit al final de la tarea.** No comitear por archivo ni por oleada intermedia — se acumulan los cambios y se comitea todo junto cuando la tarea completa está lista. Tras ese commit final: `git push --set-upstream origin <branch>` automático **solo si la rama actual matchea `feature/*`** — el `--set-upstream` deja la rama local trackeando `origin/<branch>` para que los push/pull siguientes no necesiten especificar remoto/rama. En `main`/`master` (o cualquier rama que no sea `feature/*`) nunca se pushea automático — se avisa y se espera confirmación explícita. Si falla el hook de pre-push: `php-cs-fixer fix` + `phpstan analyse`, re-stage, commit de corrección, reintentar. Nunca `--no-verify`.
 4. **TDD.** Red → Green → Refactor con PHPUnit. Test en rojo escrito ANTES que la implementación — salvo excepción explícita del punto siguiente.
 4b. **Preguntar una sola vez por tarea si se requieren tests.** Al inicio de una tarea, si no es obvio que necesita test nuevo (arreglo pequeño), preguntar una vez si la tarea lo requiere. Una vez que el usuario confirma que sí, todas las creaciones/modificaciones/ediciones de archivos de test PHPUnit (`tests/**/*Test.php`) dentro de esa misma tarea se aceptan sin volver a preguntar — no repetir la pregunta por cada archivo de test.
@@ -47,9 +57,9 @@ Luego lee `~/.claude/projects/.../memory/MEMORY.md` para contexto de sesión.
 
 Cartuchos completos en `~/.claude/agents/<nombre>.md`. Roster auto-generado en `~/.claude/agents/README.md`.
 
-Reglas profundas viven en `~/.claude/rules/` (se cargan bajo demanda, no consumen tokens si no aplican):
-- Equipos de trabajo + patrones de oleadas paralelas → `rules/workflows.md`
-- Árbol de estado de sprint → `rules/sprint-status.md`
+Reglas profundas bajo demanda — skills en `~/.claude/skills/` (cargan solo al invocarse) y reglas en `~/.claude/rules/` con `paths:` (cargan solo al tocar esos archivos):
+- Equipos de trabajo + patrones de oleadas paralelas → skill `sprint-workflow` (`skills/sprint-workflow/SKILL.md`)
+- Árbol de estado de sprint → `skills/sprint-workflow/sprint-status.md`
 - Hooks + higiene de CLAUDE.md + automatización headless → `rules/hooks.md`
 - Convenciones Symfony/Doctrine → `rules/php/symfony.md`
 - Convenciones PHPUnit/testing → `rules/php/testing.md`
@@ -88,7 +98,7 @@ Reglas profundas viven en `~/.claude/rules/` (se cargan bajo demanda, no consume
 - `/effort <low|medium|high>` ajusta profundidad de razonamiento
 - Tras un compact: verificar que CLAUDE.md cargó, `git log --oneline -3` para reorientarse
 
-Árbol de estado de sprint → `~/.claude/rules/sprint-status.md`. Hooks → `~/.claude/rules/hooks.md`.
+Árbol de estado de sprint → `~/.claude/skills/sprint-workflow/sprint-status.md`. Hooks → `~/.claude/rules/hooks.md`.
 
 ---
 

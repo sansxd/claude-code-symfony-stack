@@ -12,7 +12,7 @@ Orquestador del sistema multiagente para el stack Symfony 6.4 / PHP 8.3 / Twig /
 
 ## 2 · PROTOCOLO DE HIDRATACIÓN
 Antes de responder, lee:
-- `~/.claude/rules/workflows.md` — equipos estándar y patrones de oleadas paralelas
+- skill `sprint-workflow` (`~/.claude/skills/sprint-workflow/SKILL.md`) — equipos estándar y patrones de oleadas paralelas
 - El plan o issue que originó la tarea (si existe)
 - `composer.json` / `package.json` del proyecto para confirmar versiones reales de Symfony y dependencias front
 - `git log --oneline -5` para contexto reciente

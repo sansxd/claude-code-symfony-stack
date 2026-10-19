@@ -17,14 +17,21 @@ agents/
 ├── drafter.md                     # implementador de respaldo TDD (haiku)
 └── README.md                      # roster auto-generado
 rules/
-├── workflows.md                   # equipos estándar + patrones de oleadas paralelas
-├── sprint-status.md               # formato de árbol de estado de sprint
 ├── hooks.md                       # hooks, higiene de CLAUDE.md, automatización headless
 ├── php/symfony.md                 # convenciones Symfony/Doctrine + estilo de código PHP
 ├── php/testing.md                 # convenciones PHPUnit + mutation testing (Infection, modo PR-diff)
 └── frontend/twig-js.md            # convenciones Twig/Stimulus (lazy)/Turbo/Live & Twig Components
 skills/
-└── parallel-executor/SKILL.md     # controlador de sprint en oleadas paralelas
+├── parallel-executor/SKILL.md     # controlador de sprint en oleadas paralelas
+└── sprint-workflow/
+    ├── SKILL.md                   # equipos estándar + patrones de oleadas (solo tareas complejas)
+    └── sprint-status.md           # formato de árbol de estado de sprint
+hooks/
+├── session-start.sh               # SessionStart: rama, commits, status, versión Symfony/PHP, herramientas
+├── post-edit.sh                   # PostToolUse: php-cs-fixer solo en archivos nuevos o que ya cumplían en HEAD
+└── stop-phpstan.sh                # Stop: PHPStan sobre los .php editados (respeta phpstan-baseline.neon)
+settings/
+└── hooks.json                     # bloque `hooks` para fusionar en ~/.claude/settings.json
 ```
 
 ## Instalación
@@ -36,13 +43,20 @@ git clone <url-de-este-repo> claude-code-symfony-stack
 cd claude-code-symfony-stack
 
 cp CLAUDE.md ~/CLAUDE.md
-mkdir -p ~/.claude/agents ~/.claude/rules/php ~/.claude/rules/frontend ~/.claude/skills/parallel-executor
+mkdir -p ~/.claude/agents ~/.claude/rules/php ~/.claude/rules/frontend ~/.claude/skills ~/.claude/hooks
 cp agents/*.md ~/.claude/agents/
 cp rules/*.md ~/.claude/rules/
 cp rules/php/*.md ~/.claude/rules/php/
 cp rules/frontend/*.md ~/.claude/rules/frontend/
-cp skills/parallel-executor/SKILL.md ~/.claude/skills/parallel-executor/
+cp -r skills/* ~/.claude/skills/
+cp hooks/*.sh ~/.claude/hooks/ && chmod +x ~/.claude/hooks/*.sh
+
+# fusionar el bloque hooks en settings.json (reemplaza la clave "hooks"; respalda antes)
+cp ~/.claude/settings.json ~/.claude/settings.json.bak 2>/dev/null || echo '{}' > ~/.claude/settings.json
+jq -s '.[0] * .[1]' ~/.claude/settings.json settings/hooks.json > /tmp/settings.json && mv /tmp/settings.json ~/.claude/settings.json
 ```
+
+Los hooks requieren `jq` y no hacen nada en proyectos sin `vendor/bin/php-cs-fixer` / `vendor/bin/phpstan`. Detectan la raíz del proyecto subiendo hasta el `composer.json` del archivo editado, así que funcionan aunque la sesión se abra fuera del proyecto.
 
 **Por proyecto — versionado dentro de un repo Symfony específico:**
 
@@ -94,5 +108,6 @@ vendor/bin/mate discover
 
 - Los 6 agentes están recortados para este stack — 100% ámbito PHP/Symfony, sin agentes de otros dominios.
 - `parallel-executor` reemplaza `superpowers:subagent-driven-development` (que fuerza despacho secuencial) — dispara oleadas paralelas de agentes agrupadas por solapamiento de archivos.
-- Ver `CLAUDE.md` → sección "REGLAS NO NEGOCIABLES" para el detalle de mínimo 3 / objetivo 5 agentes en paralelo por tarea, commit único al final de la tarea (push automático solo en `feature/*`), nunca commit directo en `main`/`master` y migraciones nunca automáticas fuera de local.
+- Esfuerzo proporcional: preguntas y fixes de 1-2 archivos se resuelven directo; el equipo de agentes (`sprint-workflow`) entra solo en tareas complejas — 3+ archivos, backend + frontend, o decisiones de diseño.
+- Ver `CLAUDE.md` → sección "REGLAS NO NEGOCIABLES" para el criterio completo de esfuerzo proporcional, commit único al final de la tarea (push automático solo en `feature/*`), nunca commit directo en `main`/`master` y migraciones nunca automáticas fuera de local.
 - `rules/hooks.md`, `rules/php/*.md` y `rules/frontend/twig-js.md` llevan frontmatter `paths:` — Claude Code las carga solo cuando se tocan archivos que matchean esos globs.

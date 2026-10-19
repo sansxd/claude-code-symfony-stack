@@ -1,6 +1,6 @@
 # Reporte de Estado de Sprint
 
-**Alcance de la regla:** se carga bajo demanda cuando una sesión está por imprimir un árbol de estado de sprint.
+**Alcance:** referencia del skill `sprint-workflow` — se lee al imprimir un árbol de estado de sprint.
 
 ## Regla
 Todo sprint recibe un árbol de estado — siempre, antes de lanzar agentes y después de cada oleada completada.
