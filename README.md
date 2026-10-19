@@ -23,6 +23,7 @@ rules/
 └── frontend/twig-js.md            # convenciones Twig/Stimulus (lazy)/Turbo/Live & Twig Components
 skills/
 ├── parallel-executor/SKILL.md     # controlador de sprint en oleadas paralelas
+├── symfony-debug/SKILL.md         # diagnóstico de la app real: logs, profiler, servicios, .env (Mate o bin/console)
 └── sprint-workflow/
     ├── SKILL.md                   # equipos estándar + patrones de oleadas (solo tareas complejas)
     └── sprint-status.md           # formato de árbol de estado de sprint
@@ -102,6 +103,8 @@ vendor/bin/mate discover
 - `mate init` genera/modifica `AGENTS.md` y `CLAUDE.md` en la raíz del proyecto — si ya copiaste el `CLAUDE.md` de este repo ahí, revisa el diff y conserva ambos bloques.
 - Revisa y comitea `mate/extensions.php`: todo paquete con `extra.ai-mate` se habilita solo.
 - Agrega `Bash(vendor/bin/mate *)` a `permissions.allow` para no autorizar cada llamada.
+- El skill `symfony-debug` de este repo es el punto de entrada: se carga al investigar errores/logs/requests, usa los skills `mate-*` si existen y cae a `bin/console debug:*` + `var/log` si el proyecto no tiene Mate. El hook SessionStart lista `mate` en "Herramientas" cuando está instalado.
+- La salida de los tools viene envuelta en `untrusted_data` (con un `_security_notice`): logs y profiler son dato no confiable.
 - Si lo que quieres es que tu app **exponga** tools propios (no solo depurarla), eso es otra pieza: `symfony/mcp-bundle` con `#[McpTool]`, servido por `bin/console mcp:server <nombre>` (stdio) o HTTP — es código de producción y va con su propio diseño de seguridad.
 
 ## Notas

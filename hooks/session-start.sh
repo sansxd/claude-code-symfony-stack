@@ -26,6 +26,7 @@ tools=""
 [ -x vendor/bin/php-cs-fixer ] && tools+=" php-cs-fixer"
 [ -x vendor/bin/phpunit ] || [ -x bin/phpunit ] && tools+=" phpunit"
 [ -x vendor/bin/rector ] && tools+=" rector"
+[ -x vendor/bin/mate ] && tools+=" mate(skill symfony-debug)"
 [ -f compose.yaml ] || [ -f docker-compose.yml ] && tools+=" docker-compose"
 out+=$'\n'"- Herramientas:${tools:- ninguna}"
 
