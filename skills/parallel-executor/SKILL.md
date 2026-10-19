@@ -145,7 +145,7 @@ Tras completar todas las oleadas:
 
 ## Árbol de estado de sprint
 
-Imprime **antes de disparar cada oleada** (muestra el plan) y **después de completar cada oleada** (muestra el delta). Formato completo en `~/.claude/rules/sprint-status.md`.
+Imprime **antes de disparar cada oleada** (muestra el plan) y **después de completar cada oleada** (muestra el delta). Formato completo en `~/.claude/skills/sprint-workflow/sprint-status.md`.
 
 ---
 
