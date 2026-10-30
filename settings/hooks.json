@@ -18,11 +18,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '.tool_input.command' | grep -qE 'push.*--force' && echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"git push --force bloqueado — pide autorizacion explicita\"}}' || echo '{}'"
-          },
-          {
-            "type": "command",
-            "command": "c=$(jq -r '.tool_input.command'); if echo \"$c\" | grep -qE '^for\\b' && echo \"$c\" | grep -qE 'rm[[:space:]]+-rf|git[[:space:]]+reset[[:space:]]+--hard|git[[:space:]]+clean[[:space:]]+-f'; then echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"for-loop con comando peligroso (rm -rf / git reset --hard / git clean -f) bloqueado — pide autorizacion explicita\"}}'; else echo '{}'; fi"
+            "command": "~/.claude/hooks/pre-bash-guard.sh",
+            "timeout": 10
           }
         ]
       }

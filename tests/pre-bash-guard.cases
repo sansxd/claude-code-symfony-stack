@@ -1,0 +1,15 @@
+allow	git push origin main
+allow	git push -u origin feature/x
+allow	git push --set-upstream origin feature/x
+deny	git push --force
+deny	git push -f origin main
+deny	git push -uf origin main
+deny	git push --force-with-lease
+deny	git push origin +main
+deny	git commit -m "fix" && git push -f
+allow	git push origin main && git log -f
+allow	git fetch -f
+deny	for f in *; do rm -rf $f; done
+allow	rm -rf var/cache
+allow	git push origin feature/a+b
+allow	git push origin --delete feature/x

@@ -30,8 +30,8 @@ paths:
 ### PostToolUse (Bash) — comprimir salida verbosa de build
 Filtra con `grep -E "(ERROR|error|WARNING|FAIL)" | head -200` antes de que Claude la lea. Evita que un log de build de 10K líneas contamine el contexto.
 
-### PreToolUse (Bash) — bloquear `git push --force*`
-Sale con código 2 y stderr explicando el bloqueo. El bypass requiere solicitud explícita del usuario.
+### PreToolUse (Bash) — bloquear push forzado y bucles destructivos
+`hooks/pre-bash-guard.sh` responde `permissionDecision: "deny"` ante `git push` con `--force*`, `-f` (también agrupado, ej. `-uf`) o refspec con `+`, y ante bucles `for` con `rm -rf` / `git reset --hard` / `git clean -f`. El bypass requiere solicitud explícita del usuario. Los casos viven en `tests/pre-bash-guard.cases` (`tests/run.sh`); todo cambio al guard agrega su caso.
 
 ### Patrón de auto-fix en pre-push
 Si el hook de pre-push falla en PHP-CS-Fixer/PHPStan:

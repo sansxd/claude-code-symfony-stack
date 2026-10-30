@@ -37,6 +37,7 @@ skills/
     └── sprint-status.md           # formato de árbol de estado de sprint
 hooks/
 ├── session-start.sh               # SessionStart: rama, commits, status, versión Symfony/PHP, herramientas, composer audit (1×/día)
+├── pre-bash-guard.sh              # PreToolUse Bash: niega git push forzado (--force*, -f, +refspec) y bucles for destructivos
 ├── post-edit.sh                   # PostToolUse: php-cs-fixer solo en archivos nuevos o que ya cumplían en HEAD
 └── stop-phpstan.sh                # Stop: PHPStan sobre los .php editados (respeta phpstan-baseline.neon)
 scripts/
