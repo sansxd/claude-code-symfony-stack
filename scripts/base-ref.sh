@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Imprime el commit desde donde nació la rama actual: el merge-base más cercano entre
-# develop/main/master. Así una rama que nació de un tag de main (besrc) no arrastra
-# los tickets de develop que no son suyos.
+# develop/main/master. Así una rama que nació de un tag de main no arrastra los
+# tickets de develop que no son suyos.
 set -euo pipefail
 
 BEST=999999; BASE=

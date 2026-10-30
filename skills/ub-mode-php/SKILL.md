@@ -147,4 +147,4 @@ Un método complejo y sin tests dispara el puntaje; uno simple o bien cubierto q
 ## Commit and Push
 
 * Commits y push según la regla 3 de `CLAUDE.md` (commits chicos por unidad verificable, push al final solo en `feature/*`).
-* La promoción sigue el flujo propio del proyecto, nunca un PR ni un push a `main`/`master`. En besrc: `/deploy-dev` (integrate/<TICKET>-develop → PR a `develop`) y `/deploy-qa` (integrate/<TICKET>-release → PR a `release/X.Y.Z`); `main` solo recibe la release.
+* La promoción sigue el flujo propio del proyecto, nunca un PR ni un push a `main`/`master`. Si el proyecto define comandos propios de deploy o promoción (ej. `/deploy-dev`, `/deploy-qa`), se usan esos.
