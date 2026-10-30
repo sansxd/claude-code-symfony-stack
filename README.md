@@ -20,11 +20,14 @@ rules/
 ├── hooks.md                       # hooks, higiene de CLAUDE.md, automatización headless
 ├── php/symfony.md                 # convenciones Symfony/Doctrine + estilo de código PHP
 ├── php/testing.md                 # convenciones PHPUnit + mutation testing (Infection, modo PR-diff)
+├── php/messenger-migrations.md    # checklist de migraciones Doctrine + Messenger
 └── frontend/twig-js.md            # convenciones Twig/Stimulus (lazy)/Turbo/Live & Twig Components
 skills/
 ├── parallel-executor/SKILL.md     # controlador de sprint en oleadas paralelas
 ├── symfony-debug/SKILL.md         # diagnóstico de la app real: logs, profiler, servicios, .env (Mate o bin/console)
 ├── symfony-upgrade/SKILL.md       # upgrade de Symfony: línea base, dry-run revisado, comparación antes/después
+├── ub-mode-php/SKILL.md           # principios Uncle Bob para PHP: make it work → make it right (CRAP, duplicación)
+├── plain-language-explainer/SKILL.md  # explicar bugs/cambios en lenguaje no técnico (cliente, jefe, ticket)
 └── sprint-workflow/
     ├── SKILL.md                   # equipos estándar + patrones de oleadas (solo tareas complejas)
     └── sprint-status.md           # formato de árbol de estado de sprint
@@ -32,6 +35,11 @@ hooks/
 ├── session-start.sh               # SessionStart: rama, commits, status, versión Symfony/PHP, herramientas, composer audit (1×/día)
 ├── post-edit.sh                   # PostToolUse: php-cs-fixer solo en archivos nuevos o que ya cumplían en HEAD
 └── stop-phpstan.sh                # Stop: PHPStan sobre los .php editados (respeta phpstan-baseline.neon)
+scripts/
+├── base-ref.sh                    # commit desde donde nació la rama (merge-base más cercano develop/main/master)
+├── changed-lines.sh               # líneas cambiadas vs la base (insumo de los gates)
+├── crap-gate.sh                   # CRAP de los métodos cambiados — solo aviso en validate
+└── jscpd-gate.sh                  # clones que tocan líneas cambiadas — solo aviso en validate
 settings/
 └── hooks.json                     # bloque `hooks` para fusionar en ~/.claude/settings.json
 ```
@@ -45,13 +53,14 @@ git clone <url-de-este-repo> claude-code-symfony-stack
 cd claude-code-symfony-stack
 
 cp CLAUDE.md ~/CLAUDE.md
-mkdir -p ~/.claude/agents ~/.claude/rules/php ~/.claude/rules/frontend ~/.claude/skills ~/.claude/hooks
+mkdir -p ~/.claude/agents ~/.claude/rules/php ~/.claude/rules/frontend ~/.claude/skills ~/.claude/hooks ~/.claude/scripts
 cp agents/*.md ~/.claude/agents/
 cp rules/*.md ~/.claude/rules/
 cp rules/php/*.md ~/.claude/rules/php/
 cp rules/frontend/*.md ~/.claude/rules/frontend/
 cp -r skills/* ~/.claude/skills/
 cp hooks/*.sh ~/.claude/hooks/ && chmod +x ~/.claude/hooks/*.sh
+cp scripts/*.sh ~/.claude/scripts/ && chmod +x ~/.claude/scripts/*.sh
 
 # fusionar el bloque hooks en settings.json (reemplaza la clave "hooks"; respalda antes)
 cp ~/.claude/settings.json ~/.claude/settings.json.bak 2>/dev/null || echo '{}' > ~/.claude/settings.json
@@ -113,5 +122,5 @@ vendor/bin/mate discover
 - Los 6 agentes están recortados para este stack — 100% ámbito PHP/Symfony, sin agentes de otros dominios.
 - `parallel-executor` reemplaza `superpowers:subagent-driven-development` (que fuerza despacho secuencial) — dispara oleadas paralelas de agentes agrupadas por solapamiento de archivos.
 - Esfuerzo proporcional: preguntas y fixes de 1-2 archivos se resuelven directo; el equipo de agentes (`sprint-workflow`) entra solo en tareas complejas — 3+ archivos, backend + frontend, o decisiones de diseño.
-- Ver `CLAUDE.md` → sección "REGLAS NO NEGOCIABLES" para el criterio completo de esfuerzo proporcional, commit único al final de la tarea (push automático solo en `feature/*`), nunca commit directo en `main`/`master` y migraciones nunca automáticas fuera de local.
+- Ver `CLAUDE.md` → sección "REGLAS NO NEGOCIABLES" para el criterio completo de esfuerzo proporcional, commits chicos por unidad verificable (push automático solo en `feature/*`), nunca commit directo en `main`/`master` y migraciones nunca automáticas fuera de local.
 - `rules/hooks.md`, `rules/php/*.md` y `rules/frontend/twig-js.md` llevan frontmatter `paths:` — Claude Code las carga solo cuando se tocan archivos que matchean esos globs.

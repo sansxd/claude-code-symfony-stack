@@ -24,13 +24,21 @@ bin/console lint:yaml config/               # YAML de configuración
 bin/console lint:twig templates/            # sintaxis Twig
 bin/console lint:container                  # servicios bien cableados
 vendor/bin/phpstan analyse                  # análisis estático
-vendor/bin/php-cs-fixer fix --dry-run --diff  # estilo PSR-12/@Symfony
+# estilo PSR-12/@Symfony: solo los .php cambiados vs la rama base (incluye sin commitear y nuevos), en UNA llamada
+BASE=$(~/.claude/scripts/base-ref.sh)      # punto donde nació la rama (merge-base más cercano entre develop/main/master)
+{ git diff --name-only --diff-filter=d "$BASE" -- '*.php'; git ls-files --others --exclude-standard -- '*.php'; } \
+  | sort -u | xargs -r vendor/bin/php-cs-fixer fix --dry-run --diff --path-mode=intersection \
+      --config="$(ls .php-cs-fixer.php .php-cs-fixer.dist.php 2>/dev/null | head -1)"   # con varios paths, --config es obligatorio
 php bin/phpunit --testdox                    # suite de tests
 npm run build                                 # build de assets, si el proyecto tiene JS/Encore
+~/.claude/scripts/crap-gate.sh || true        # CRAP de los métodos cambiados — SOLO AVISO, nunca bloquea
+~/.claude/scripts/jscpd-gate.sh || true       # clones que tocan líneas cambiadas — SOLO AVISO, nunca bloquea
 ```
 
+Los pasos CRAP y duplicación van al final y **no bloquean**: si reportan algo, se informa como `⚠ CRAP — <lista>` / `⚠ duplicación — <lista>` y el gate termina en verde igual. CRAP tarda ~1 min (tests relacionados con Xdebug en modo coverage); duplicación ~20 s.
+
 ## 5 · CONTRATO DE ENTREGA
-Reporta un resumen de una línea por paso: `✅ paso` o `❌ paso — <primer error, archivo:línea>`. Se detiene en el primer `❌` y no continúa con los pasos siguientes — el experto correspondiente corrige antes de reintentar.
+Reporta un resumen de una línea por paso: `✅ paso` o `❌ paso — <primer error, archivo:línea>`. Se detiene en el primer `❌` y no continúa con los pasos siguientes — el experto correspondiente corrige antes de reintentar. Excepción: los pasos CRAP y duplicación siempre se reportan como `⚠` (con su lista), nunca como `❌`.
 
 ## 6 · QUÉ VERIFICA EL SIGUIENTE AGENTE
 Este es el último gate antes de commit/push. Si todo pasa, el controlador (architect/parallel-executor) marca la tarea completa en el ledger.
