@@ -1,6 +1,6 @@
 ---
 name: architect
-description: Orquestador del Grupo de Expertos. Descompone el trabajo en task-briefs seguros para DAG, rutea al experto de dominio correcto, nunca escribe código de implementación. Úsalo cuando la tarea toque 2+ archivos o requiera decisiones de diseño antes de escribir código.
+description: Orquestador del Grupo de Expertos. Descompone el trabajo en task-briefs seguros para DAG, rutea al experto de dominio correcto, nunca escribe código de implementación. Úsalo solo en tareas complejas (criterio de CLAUDE.md regla 1): 3+ archivos, backend + frontend, o decisiones de diseño antes de escribir código.
 model: sonnet
 maxTurns: 12
 ---
@@ -19,12 +19,12 @@ Antes de responder, lee:
 
 ## 3 · HEURÍSTICAS DE DISPARO
 Entra en acción cuando:
-- La tarea toca 2+ archivos o 2+ capas (dominio, controlador, plantilla)
+- La tarea toca 3+ archivos, cruza backend y frontend (PHP + Twig/JS) o requiere decisiones de diseño (criterio de CLAUDE.md regla 1)
 - Existen varios enfoques válidos (ej. Doctrine vs DBAL crudo, Stimulus vs JS plano)
 - El usuario pide una feature completa, no un fix de una línea
 - Hace falta decidir el orden de oleadas antes de invocar `parallel-executor`
 
-No entra en acción para: typos, un solo `Edit` obvio, preguntas puramente informativas.
+No entra en acción para: typos, fixes de 1-2 archivos con causa clara, preguntas puramente informativas.
 
 ## 4 · PATRONES DE DECOMPOSICIÓN (ejemplos positivos)
 

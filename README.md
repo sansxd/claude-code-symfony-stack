@@ -7,6 +7,8 @@ Setup multi-agente enfocado exclusivamente en el ámbito PHP.
 ## Qué incluye
 
 ```
+install.sh                         # instalador global o por proyecto (--project <dir>)
+tests/run.sh                       # tests del repo: guard de Bash, frontmatter, hooks.json
 CLAUDE.md                          # instrucciones raíz — rol, reglas no negociables, ruteo de agentes
 agents/
 ├── architect.md                   # descomposición de tareas, diseño de sistema
@@ -14,8 +16,7 @@ agents/
 ├── frontend-expert.md             # Twig/Stimulus/Turbo/JS/CSS
 ├── adversarial.md                 # ataque de diseño, OWASP, diagnóstico de solo lectura
 ├── validate.md                    # gate de type/lint/format/test (haiku)
-├── drafter.md                     # implementador de respaldo TDD (haiku)
-└── README.md                      # roster auto-generado
+└── drafter.md                     # implementador de respaldo TDD (haiku)
 rules/
 ├── hooks.md                       # hooks, higiene de CLAUDE.md, automatización headless
 ├── php/symfony.md                 # convenciones Symfony/Doctrine + estilo de código PHP
@@ -31,12 +32,14 @@ skills/
 ├── stimulus/                      # ┐ Symfony UX — de Simon André (MIT), ver "Créditos"
 ├── live-component/                # │
 ├── twig-component/                # │
+├── turbo/                         # │
 ├── ux-icons/                      # ┘
 └── sprint-workflow/
     ├── SKILL.md                   # equipos estándar + patrones de oleadas (solo tareas complejas)
     └── sprint-status.md           # formato de árbol de estado de sprint
 hooks/
 ├── session-start.sh               # SessionStart: rama, commits, status, versión Symfony/PHP, herramientas, composer audit (1×/día)
+├── pre-bash-guard.sh              # PreToolUse Bash: niega git push forzado (--force*, -f, +refspec) y bucles for destructivos
 ├── post-edit.sh                   # PostToolUse: php-cs-fixer solo en archivos nuevos o que ya cumplían en HEAD
 └── stop-phpstan.sh                # Stop: PHPStan sobre los .php editados (respeta phpstan-baseline.neon)
 scripts/
@@ -50,39 +53,19 @@ settings/
 
 ## Instalación
 
-**Global — para cada sesión de Claude Code en esta máquina:**
-
 ```bash
-git clone <url-de-este-repo> claude-code-symfony-stack
+git clone https://github.com/sansxd/claude-code-symfony-stack.git
 cd claude-code-symfony-stack
-
-cp CLAUDE.md ~/CLAUDE.md
-mkdir -p ~/.claude/agents ~/.claude/rules/php ~/.claude/rules/frontend ~/.claude/skills ~/.claude/hooks ~/.claude/scripts
-cp agents/*.md ~/.claude/agents/
-cp rules/*.md ~/.claude/rules/
-cp rules/php/*.md ~/.claude/rules/php/
-cp rules/frontend/*.md ~/.claude/rules/frontend/
-cp -r skills/* ~/.claude/skills/
-cp hooks/*.sh ~/.claude/hooks/ && chmod +x ~/.claude/hooks/*.sh
-cp scripts/*.sh ~/.claude/scripts/ && chmod +x ~/.claude/scripts/*.sh
-
-# fusionar el bloque hooks en settings.json (reemplaza la clave "hooks"; respalda antes)
-cp ~/.claude/settings.json ~/.claude/settings.json.bak 2>/dev/null || echo '{}' > ~/.claude/settings.json
-jq -s '.[0] * .[1]' ~/.claude/settings.json settings/hooks.json > /tmp/settings.json && mv /tmp/settings.json ~/.claude/settings.json
+./install.sh                          # global: ~/CLAUDE.md + ~/.claude (agentes, reglas, skills, hooks, scripts)
+./install.sh --project ~/ruta/al/app  # por proyecto: CLAUDE.md + .claude/ dentro del repo Symfony (sin hooks)
 ```
 
-Los hooks requieren `jq` y no hacen nada en proyectos sin `vendor/bin/php-cs-fixer` / `vendor/bin/phpstan`. Detectan la raíz del proyecto subiendo hasta el `composer.json` del archivo editado, así que funcionan aunque la sesión se abra fuera del proyecto.
+- Reinstalar es seguro: los archivos idénticos se dejan tal cual y los que cambiaste localmente se respaldan como `<archivo>.bak-<fecha>` antes de sobrescribirlos.
+- En `~/.claude/settings.json` solo se reemplazan los eventos de hook que define `settings/hooks.json` (`PreToolUse`, `PostToolUse`, `SessionStart`, `Stop`); el resto de la configuración y tus otros eventos se conservan. Se respalda antes.
+- Los hooks requieren `jq` y no hacen nada en proyectos sin `vendor/bin/php-cs-fixer` / `vendor/bin/phpstan`. Detectan la raíz del proyecto subiendo hasta el `composer.json` del archivo editado, así que funcionan aunque la sesión se abra fuera del proyecto.
+- La instalación por proyecto incluye `scripts/` en `.claude/scripts/`, que es donde `validate` los busca primero.
 
-**Por proyecto — versionado dentro de un repo Symfony específico:**
-
-```bash
-git clone <url-de-este-repo> .claude-code-symfony-stack
-cp .claude-code-symfony-stack/CLAUDE.md ./CLAUDE.md
-mkdir -p .claude/agents .claude/rules .claude/skills
-cp -r .claude-code-symfony-stack/agents/* .claude/agents/
-cp -r .claude-code-symfony-stack/rules/* .claude/rules/
-cp -r .claude-code-symfony-stack/skills/* .claude/skills/
-```
+**Para Claude (otra máquina u otra sesión):** basta con pedirle *"clona https://github.com/sansxd/claude-code-symfony-stack y corre `./install.sh`"*; luego reiniciar la sesión para que cargue `CLAUDE.md`, agentes, skills y hooks.
 
 ## Plugin requerido
 
@@ -131,4 +114,6 @@ vendor/bin/mate discover
 
 ## Créditos
 
-Los skills `stimulus`, `live-component`, `twig-component` y `ux-icons` son obra de **Simon André** ([smnandre.dev](https://smnandre.dev)), copiados sin cambios desde [smnandre/symfony-ux-skills](https://github.com/smnandre/symfony-ux-skills) (v1.2.0) bajo licencia MIT. Cada carpeta incluye su `LICENSE` original. Para la versión más reciente (o los skills `turbo`, `ux-map` y `symfony-ux` que no se incluyen aquí), instalar desde el repo original.
+Los skills `stimulus`, `turbo`, `live-component`, `twig-component` y `ux-icons` son obra de **Simon André** ([smnandre.dev](https://smnandre.dev)), copiados sin cambios desde [smnandre/symfony-ux-skills](https://github.com/smnandre/symfony-ux-skills) (v1.2.0) bajo licencia MIT. Cada carpeta incluye su `LICENSE` original. Para la versión más reciente (o los skills `ux-map` y `symfony-ux` que no se incluyen aquí), instalar desde el repo original.
+
+El resto del repo se publica bajo licencia MIT (ver `LICENSE`).

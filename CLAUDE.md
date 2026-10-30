@@ -58,7 +58,7 @@ Hooks activos: `post-edit.sh` (php-cs-fixer solo en archivos nuevos o que ya cum
 | Gate type/lint/format/test antes de commit | `validate` | haiku |
 | Implementador de respaldo (sin experto exacto, TDD en archivos nuevos) | `drafter` | haiku |
 
-Cartuchos completos en `~/.claude/agents/<nombre>.md`. Roster auto-generado en `~/.claude/agents/README.md`.
+Cartuchos completos en `~/.claude/agents/<nombre>.md` — esta tabla es el único roster.
 
 Reglas profundas bajo demanda — skills en `~/.claude/skills/` (cargan solo al invocarse) y reglas en `~/.claude/rules/` con `paths:` (cargan solo al tocar esos archivos):
 - Equipos de trabajo + patrones de oleadas paralelas → skill `sprint-workflow` (`skills/sprint-workflow/SKILL.md`)
