@@ -7,6 +7,8 @@ Setup multi-agente enfocado exclusivamente en el ámbito PHP.
 ## Qué incluye
 
 ```
+install.sh                         # instalador global o por proyecto (--project <dir>)
+tests/run.sh                       # tests del repo: guard de Bash, frontmatter, hooks.json
 CLAUDE.md                          # instrucciones raíz — rol, reglas no negociables, ruteo de agentes
 agents/
 ├── architect.md                   # descomposición de tareas, diseño de sistema
@@ -51,39 +53,19 @@ settings/
 
 ## Instalación
 
-**Global — para cada sesión de Claude Code en esta máquina:**
-
 ```bash
-git clone <url-de-este-repo> claude-code-symfony-stack
+git clone https://github.com/sansxd/claude-code-symfony-stack.git
 cd claude-code-symfony-stack
-
-cp CLAUDE.md ~/CLAUDE.md
-mkdir -p ~/.claude/agents ~/.claude/rules/php ~/.claude/rules/frontend ~/.claude/skills ~/.claude/hooks ~/.claude/scripts
-cp agents/*.md ~/.claude/agents/
-cp rules/*.md ~/.claude/rules/
-cp rules/php/*.md ~/.claude/rules/php/
-cp rules/frontend/*.md ~/.claude/rules/frontend/
-cp -r skills/* ~/.claude/skills/
-cp hooks/*.sh ~/.claude/hooks/ && chmod +x ~/.claude/hooks/*.sh
-cp scripts/*.sh ~/.claude/scripts/ && chmod +x ~/.claude/scripts/*.sh
-
-# fusionar el bloque hooks en settings.json (reemplaza la clave "hooks"; respalda antes)
-cp ~/.claude/settings.json ~/.claude/settings.json.bak 2>/dev/null || echo '{}' > ~/.claude/settings.json
-jq -s '.[0] * .[1]' ~/.claude/settings.json settings/hooks.json > /tmp/settings.json && mv /tmp/settings.json ~/.claude/settings.json
+./install.sh                          # global: ~/CLAUDE.md + ~/.claude (agentes, reglas, skills, hooks, scripts)
+./install.sh --project ~/ruta/al/app  # por proyecto: CLAUDE.md + .claude/ dentro del repo Symfony (sin hooks)
 ```
 
-Los hooks requieren `jq` y no hacen nada en proyectos sin `vendor/bin/php-cs-fixer` / `vendor/bin/phpstan`. Detectan la raíz del proyecto subiendo hasta el `composer.json` del archivo editado, así que funcionan aunque la sesión se abra fuera del proyecto.
+- Reinstalar es seguro: los archivos idénticos se dejan tal cual y los que cambiaste localmente se respaldan como `<archivo>.bak-<fecha>` antes de sobrescribirlos.
+- En `~/.claude/settings.json` solo se reemplazan los eventos de hook que define `settings/hooks.json` (`PreToolUse`, `PostToolUse`, `SessionStart`, `Stop`); el resto de la configuración y tus otros eventos se conservan. Se respalda antes.
+- Los hooks requieren `jq` y no hacen nada en proyectos sin `vendor/bin/php-cs-fixer` / `vendor/bin/phpstan`. Detectan la raíz del proyecto subiendo hasta el `composer.json` del archivo editado, así que funcionan aunque la sesión se abra fuera del proyecto.
+- La instalación por proyecto incluye `scripts/` en `.claude/scripts/`, que es donde `validate` los busca primero.
 
-**Por proyecto — versionado dentro de un repo Symfony específico:**
-
-```bash
-git clone <url-de-este-repo> .claude-code-symfony-stack
-cp .claude-code-symfony-stack/CLAUDE.md ./CLAUDE.md
-mkdir -p .claude/agents .claude/rules .claude/skills
-cp -r .claude-code-symfony-stack/agents/* .claude/agents/
-cp -r .claude-code-symfony-stack/rules/* .claude/rules/
-cp -r .claude-code-symfony-stack/skills/* .claude/skills/
-```
+**Para Claude (otra máquina u otra sesión):** basta con pedirle *"clona https://github.com/sansxd/claude-code-symfony-stack y corre `./install.sh`"*; luego reiniciar la sesión para que cargue `CLAUDE.md`, agentes, skills y hooks.
 
 ## Plugin requerido
 
