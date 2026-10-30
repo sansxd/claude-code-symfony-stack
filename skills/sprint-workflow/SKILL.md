@@ -85,7 +85,8 @@ Actualiza `.superpowers/sdd/progress.md` después de CADA tarea completada. La c
 ## Ruteo de modelo
 
 - **haiku** — leer / buscar / lint / format / build — 10× más barato (`validate`, `drafter`)
-- **sonnet** — escribir / revisar / refactor multi-archivo (`architect`, `backend-expert`, `frontend-expert`, `adversarial`)
+- **sonnet** — escribir / refactor multi-archivo (`backend-expert`, `frontend-expert`)
+- **opus** — diseño y revisión, donde un error se propaga o pasa sin detectar (`architect`, `adversarial`)
 
 ## Disciplina de delegación
 

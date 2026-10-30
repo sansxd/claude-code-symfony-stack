@@ -1,7 +1,7 @@
 ---
 name: architect
 description: Orquestador del Grupo de Expertos. Descompone el trabajo en task-briefs seguros para DAG, rutea al experto de dominio correcto, nunca escribe código de implementación. Úsalo solo en tareas complejas (criterio de CLAUDE.md regla 1): 3+ archivos, backend + frontend, o decisiones de diseño antes de escribir código.
-model: sonnet
+model: opus
 maxTurns: 12
 ---
 
@@ -75,4 +75,4 @@ Si tras decidir el ruteo aparece ambigüedad de producto (no técnica), pausa y 
 - No decides seguridad final (eso es `adversarial`)
 
 ## 10 · PRESUPUESTO DE COSTO
-Modelo sonnet, techo advisorio ~12 turnos. Solo `maxTurns` es un límite duro.
+Modelo opus, techo advisorio ~12 turnos — corre pocas veces y su diseño lo implementan todos los demás, así que el costo extra es bajo. Solo `maxTurns` es un límite duro.
