@@ -30,6 +30,7 @@ skills/
 ├── stimulus/                      # ┐ Symfony UX — de Simon André (MIT), ver "Créditos"
 ├── live-component/                # │
 ├── twig-component/                # │
+├── turbo/                         # │
 ├── ux-icons/                      # ┘
 └── sprint-workflow/
     ├── SKILL.md                   # equipos estándar + patrones de oleadas (solo tareas complejas)
@@ -130,4 +131,6 @@ vendor/bin/mate discover
 
 ## Créditos
 
-Los skills `stimulus`, `live-component`, `twig-component` y `ux-icons` son obra de **Simon André** ([smnandre.dev](https://smnandre.dev)), copiados sin cambios desde [smnandre/symfony-ux-skills](https://github.com/smnandre/symfony-ux-skills) (v1.2.0) bajo licencia MIT. Cada carpeta incluye su `LICENSE` original. Para la versión más reciente (o los skills `turbo`, `ux-map` y `symfony-ux` que no se incluyen aquí), instalar desde el repo original.
+Los skills `stimulus`, `turbo`, `live-component`, `twig-component` y `ux-icons` son obra de **Simon André** ([smnandre.dev](https://smnandre.dev)), copiados sin cambios desde [smnandre/symfony-ux-skills](https://github.com/smnandre/symfony-ux-skills) (v1.2.0) bajo licencia MIT. Cada carpeta incluye su `LICENSE` original. Para la versión más reciente (o los skills `ux-map` y `symfony-ux` que no se incluyen aquí), instalar desde el repo original.
+
+El resto del repo se publica bajo licencia MIT (ver `LICENSE`).
