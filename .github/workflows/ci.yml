@@ -1,0 +1,22 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: shellcheck
+        run: shellcheck -S warning hooks/*.sh scripts/*.sh install.sh tests/run.sh
+      - name: tests del repo
+        run: tests/run.sh
+      - name: install.sh en HOME temporal
+        run: |
+          export HOME="$(mktemp -d)"
+          ./install.sh
+          ./install.sh --project "$(mktemp -d)"
+          jq -e '.hooks.PreToolUse and .hooks.Stop' "$HOME/.claude/settings.json"

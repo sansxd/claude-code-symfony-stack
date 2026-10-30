@@ -2,7 +2,7 @@
 # Tests del repo: casos del hook pre-bash-guard.sh + frontmatter de agentes y skills + settings/hooks.json.
 # Uso: tests/run.sh  (desde cualquier lado; requiere jq)
 set -uo pipefail
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/.." || exit 1
 fail=0
 
 # pre-bash-guard: cada línea es "<allow|deny>\t<comando>"
@@ -24,7 +24,7 @@ done
 jq -e . settings/hooks.json >/dev/null || { echo "❌ settings/hooks.json no es JSON válido"; fail=1; }
 while read -r h; do
   [ -x "$h" ] || { echo "❌ settings/hooks.json referencia $h, que no existe o no es ejecutable"; fail=1; }
-done < <(jq -r '.. | .command? // empty' settings/hooks.json | grep -oE '~/\.claude/hooks/[^ ]+' | sed 's|~/\.claude/||')
+done < <(jq -r '.. | .command? // empty' settings/hooks.json | grep -oE '[~]/\.claude/hooks/[^ ]+' | sed 's|^[~]/\.claude/||')
 
 [ "$fail" -eq 0 ] && echo "✅ tests del repo"
 exit "$fail"
