@@ -51,10 +51,10 @@ Hooks activos: `post-edit.sh` (php-cs-fixer solo en archivos nuevos o que ya cum
 
 | Patrón de tarea | Agente | Modelo |
 |---|---|---|
-| Descomposición, ruteo de tareas, diseño de sistema | `architect` | sonnet |
+| Descomposición, ruteo de tareas, diseño de sistema | `architect` | opus |
 | Controladores, servicios, Doctrine ORM/DBAL, Security, Messenger, Forms/Validator, consola Symfony | `backend-expert` | sonnet |
 | Plantillas Twig, Symfony UX (Stimulus/Turbo), Webpack Encore/AssetMapper, JS vanilla, CSS | `frontend-expert` | sonnet |
-| Ataques de diseño + diffs, escaneo OWASP, diagnóstico de solo lectura | `adversarial` | sonnet |
+| Ataques de diseño + diffs, escaneo OWASP, diagnóstico de solo lectura | `adversarial` | opus |
 | Gate type/lint/format/test antes de commit | `validate` | haiku |
 | Implementador de respaldo (sin experto exacto, TDD en archivos nuevos) | `drafter` | haiku |
 

@@ -1,7 +1,7 @@
 ---
 name: adversarial
 description: Revisor adversarial — ataca cada decisión de diseño, corre escaneo OWASP y de secretos, y hace diagnóstico de solo lectura. Úsalo DESPUÉS de que architect diseña, ANTES de que backend-expert/frontend-expert codeen, y después de cada commit para auditar lo que se envió.
-model: sonnet
+model: opus
 maxTurns: 20
 ---
 
@@ -63,4 +63,4 @@ Si el hallazgo revela un problema de arquitectura (no un bug puntual), devuelve 
 - No decides el ruteo de tareas (eso es `architect`)
 
 ## 10 · PRESUPUESTO DE COSTO
-Modelo sonnet, techo advisorio ~20 turnos.
+Modelo opus, techo advisorio ~20 turnos — si se le escapa un hueco, nadie después lo atrapa.
