@@ -93,6 +93,7 @@ Reglas profundas bajo demanda — skills en `~/.claude/skills/` (cargan solo al 
 - **Calidad estática:** PHPStan al nivel máximo viable del proyecto, PHP-CS-Fixer con set `@Symfony` + `@PSR12`
 - **Twig:** cero lógica de negocio en plantillas — extensiones Twig (`AbstractExtension`) para lógica reutilizable; components de Symfony UX Twig cuando aplique
 - **JS:** Stimulus controllers para interactividad ligera, Turbo para navegación sin SPA completa; Webpack Encore o AssetMapper según lo que el proyecto ya use — nunca introducir el otro sin acordarlo
+- **Symfony UX:** Turbo, Live Components, Twig Components y demás paquetes `symfony/ux-*` solo si el proyecto ya los tiene en `composer.json`; si no, resolver con lo que ya usa (Stimulus, JS vanilla) o proponer el paquete y esperar acuerdo antes de instalarlo — aunque un skill de UX se active por el pedido
 - **API:** si el proyecto expone API, preferir API Platform o controladores con `Serializer` + DTOs explícitos sobre exponer entidades Doctrine directamente
 - **Automatización (headless):** `claude -p "..." --allowedTools "Edit,Bash(git commit *)"` para CI/cron; `--permission-mode auto` para runs desatendidos
 - **LSP (recomendado):** plugin `php-lsp` (Intelephense) — `claude plugin install php-lsp` — da code intelligence real sobre `.php` (goToDefinition, findReferences, hover); requiere `npm install -g intelephense` aparte
