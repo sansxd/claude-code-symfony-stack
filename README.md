@@ -28,6 +28,10 @@ skills/
 ├── symfony-upgrade/SKILL.md       # upgrade de Symfony: línea base, dry-run revisado, comparación antes/después
 ├── ub-mode-php/SKILL.md           # principios Uncle Bob para PHP: make it work → make it right (CRAP, duplicación)
 ├── plain-language-explainer/SKILL.md  # explicar bugs/cambios en lenguaje no técnico (cliente, jefe, ticket)
+├── stimulus/                      # ┐ Symfony UX — de Simon André (MIT), ver "Créditos"
+├── live-component/                # │
+├── twig-component/                # │
+├── ux-icons/                      # ┘
 └── sprint-workflow/
     ├── SKILL.md                   # equipos estándar + patrones de oleadas (solo tareas complejas)
     └── sprint-status.md           # formato de árbol de estado de sprint
@@ -124,3 +128,7 @@ vendor/bin/mate discover
 - Esfuerzo proporcional: preguntas y fixes de 1-2 archivos se resuelven directo; el equipo de agentes (`sprint-workflow`) entra solo en tareas complejas — 3+ archivos, backend + frontend, o decisiones de diseño.
 - Ver `CLAUDE.md` → sección "REGLAS NO NEGOCIABLES" para el criterio completo de esfuerzo proporcional, commits chicos por unidad verificable (push automático solo en `feature/*`), nunca commit directo en `main`/`master` y migraciones nunca automáticas fuera de local.
 - `rules/hooks.md`, `rules/php/*.md` y `rules/frontend/twig-js.md` llevan frontmatter `paths:` — Claude Code las carga solo cuando se tocan archivos que matchean esos globs.
+
+## Créditos
+
+Los skills `stimulus`, `live-component`, `twig-component` y `ux-icons` son obra de **Simon André** ([smnandre.dev](https://smnandre.dev)), copiados sin cambios desde [smnandre/symfony-ux-skills](https://github.com/smnandre/symfony-ux-skills) (v1.2.0) bajo licencia MIT. Cada carpeta incluye su `LICENSE` original. Para la versión más reciente (o los skills `turbo`, `ux-map` y `symfony-ux` que no se incluyen aquí), instalar desde el repo original.
