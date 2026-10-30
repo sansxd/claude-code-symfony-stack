@@ -58,6 +58,8 @@ Hooks activos: `post-edit.sh` (php-cs-fixer solo en archivos nuevos o que ya cum
 | Gate type/lint/format/test antes de commit | `validate` | haiku |
 | Implementador de respaldo (sin experto exacto, TDD en archivos nuevos) | `drafter` | haiku |
 
+`Explore` (agente de búsqueda de Claude Code, sin modelo propio) hereda el de la sesión: lanzarlo siempre con `model: sonnet` — solo lee y resume, y la sesión principal decide. `model: opus` solo si la investigación es de diseño o de seguridad.
+
 Cartuchos completos en `~/.claude/agents/<nombre>.md` — esta tabla es el único roster.
 
 Reglas profundas bajo demanda — skills en `~/.claude/skills/` (cargan solo al invocarse) y reglas en `~/.claude/rules/` con `paths:` (cargan solo al tocar esos archivos):
