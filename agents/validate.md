@@ -23,16 +23,17 @@ composer validate --strict                 # composer.json/lock coherentes
 bin/console lint:yaml config/               # YAML de configuración
 bin/console lint:twig templates/            # sintaxis Twig
 bin/console lint:container                  # servicios bien cableados
-vendor/bin/phpstan analyse                  # análisis estático
+timeout 580 vendor/bin/phpstan analyse --memory-limit=1G   # análisis estático
 # estilo PSR-12/@Symfony: solo los .php cambiados vs la rama base (incluye sin commitear y nuevos), en UNA llamada
-BASE=$(~/.claude/scripts/base-ref.sh)      # punto donde nació la rama (merge-base más cercano entre develop/main/master)
+S=$( [ -d .claude/scripts ] && echo .claude/scripts || echo ~/.claude/scripts )   # instalación por proyecto o global
+BASE=$("$S"/base-ref.sh)      # punto donde nació la rama (merge-base más cercano entre develop/main/master)
 { git diff --name-only --diff-filter=d "$BASE" -- '*.php'; git ls-files --others --exclude-standard -- '*.php'; } \
   | sort -u | xargs -r vendor/bin/php-cs-fixer fix --dry-run --diff --path-mode=intersection \
       --config="$(ls .php-cs-fixer.php .php-cs-fixer.dist.php 2>/dev/null | head -1)"   # con varios paths, --config es obligatorio
-php bin/phpunit --testdox                    # suite de tests
+timeout 580 php -d memory_limit=1G bin/phpunit --testdox   # suite de tests (vendor/bin/phpunit si no hay bin/phpunit)
 npm run build                                 # build de assets, si el proyecto tiene JS/Encore
-~/.claude/scripts/crap-gate.sh || true        # CRAP de los métodos cambiados — SOLO AVISO, nunca bloquea
-~/.claude/scripts/jscpd-gate.sh || true       # clones que tocan líneas cambiadas — SOLO AVISO, nunca bloquea
+"$S"/crap-gate.sh || true           # CRAP de los métodos cambiados — SOLO AVISO, nunca bloquea
+"$S"/jscpd-gate.sh || true         # clones que tocan líneas cambiadas — SOLO AVISO, nunca bloquea
 ```
 
 Los pasos CRAP y duplicación van al final y **no bloquean**: si reportan algo, se informa como `⚠ CRAP — <lista>` / `⚠ duplicación — <lista>` y el gate termina en verde igual. CRAP tarda ~1 min (tests relacionados con Xdebug en modo coverage); duplicación ~20 s.

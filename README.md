@@ -14,8 +14,7 @@ agents/
 ├── frontend-expert.md             # Twig/Stimulus/Turbo/JS/CSS
 ├── adversarial.md                 # ataque de diseño, OWASP, diagnóstico de solo lectura
 ├── validate.md                    # gate de type/lint/format/test (haiku)
-├── drafter.md                     # implementador de respaldo TDD (haiku)
-└── README.md                      # roster auto-generado
+└── drafter.md                     # implementador de respaldo TDD (haiku)
 rules/
 ├── hooks.md                       # hooks, higiene de CLAUDE.md, automatización headless
 ├── php/symfony.md                 # convenciones Symfony/Doctrine + estilo de código PHP

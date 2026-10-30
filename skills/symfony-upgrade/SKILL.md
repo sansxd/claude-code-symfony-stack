@@ -1,6 +1,6 @@
 ---
 name: symfony-upgrade
-description: "Subir la versión de Symfony de un proyecto (minor 8.0→8.1, o major 6.4→7.x/8.x), o corregir advisories de composer audit que exigen subir Symfony. Úsalo cuando el usuario diga 'actualiza Symfony', 'sube a 8.1', 'arregla las vulnerabilidades de composer audit' o similar. Flujo con línea base, dry-run revisado, comparación antes/después y commit único."
+description: "Subir la versión de Symfony de un proyecto (minor 8.0→8.1, o major 6.4→7.x/8.x), o corregir advisories de composer audit que exigen subir Symfony. Úsalo cuando el usuario diga 'actualiza Symfony', 'sube a 8.1', 'arregla las vulnerabilidades de composer audit' o similar. Flujo con línea base, dry-run revisado, comparación antes/después y un solo commit (excepción a la regla 3: el upgrade es una unidad atómica)."
 ---
 
 # Upgrade de Symfony — línea base, dry-run, comparar
