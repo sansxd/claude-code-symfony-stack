@@ -3,60 +3,83 @@
 **Alcance:** referencia del skill `sprint-workflow` — se lee al imprimir un árbol de estado de sprint.
 
 ## Regla
-Todo sprint recibe un árbol de estado — siempre, antes de lanzar agentes y después de cada oleada completada.
+Todo sprint tiene dos vistas de estado:
 
-## Formato
+- **Árbol completo** — al inicio (antes de lanzar la primera oleada, muestra el plan) y al cierre del sprint.
+- **Línea compacta** — después de cada oleada completada y cuando el usuario pide el estado a mitad de sprint. Si una oleada termina con ❌ o aparece una decisión ❓ nueva, se imprime el árbol completo en vez de la línea.
+
+## Árbol completo
 
 ```
-😸 Sprint N — activo
-├── 🤖 agentes   — N en paralelo (agente1·agente2·agente3·...)
-├── 🧠 skills    — skill1 → skill2 → skill3
-├── 📊 métricas  — tests X→Y · PHPStan 0 errores · build ✅
+😸 Sprint N — TICKET-123 · objetivo de la entrega · 2/6
+├── 🤖 agentes    — 2 en paralelo (backend-expert·frontend-expert)
+├── 🧠 skills     — sprint-workflow → writing-plans → parallel-executor
+├── 📊 métricas   — tests 412→418 · PHPStan 0 · cs ✅ · build ✅
+├── ❓ decisiones — default de `active` · ¿migrar antes del dump?
 │
-├── 🐘 archivo.php        — resumen de una línea de lo hecho (completado)
-├── 🔄⚡ archivo.js       — descripción breve de la tarea (en progreso)
-├── ❌🍃 archivo.html.twig — descripción breve de la tarea (fallido)
-└── 🔒 adversarial       — alcance de la revisión de seguridad final
+├── 🌊 Oleada 1
+│   ├── 🐘 Entity + migración — campo active                 [a1b2c3d]
+│   └── 🐘 Repository — filtro por active                    [e4f5g6h]
+├── 🌊 Oleada 2
+│   ├── 🔄🐘 Service + API — rechaza inactivos  [backend-expert · 3 arch]
+│   ├── 🔄🍃 listado.html.twig — badge inactivo [frontend-expert · 2 arch]
+│   └── ❌🐘 Command de backfill — PHPStan: 3 errores      [backend-expert]
+├── 🌊 Oleada 3
+│   └── ⏳🐘 Listener de caché — invalidar menú            [backend-expert]
+│
+└── 🔒 adversarial — revisión del diff al cierre
 ```
 
-Las tres etiquetas de metadata (`agentes`/`skills`/`métricas`) van alineadas al mismo ancho de columna (9 caracteres tras el emoji, incluido el espacio antes de `—`). La línea `│` en blanco separa la metadata del sprint de las filas de trabajo (archivos/agentes) — no lleva emoji ni texto.
+### Encabezado
+`😸 Sprint N — <ticket> · <objetivo> · <hechas>/<total>`. El ticket va siempre (usa `—` si no hay). El contador cuenta tareas, no archivos; `🔒 adversarial` no entra en el total.
 
-En filas de archivo se añade un emoji de tipo pegado sin espacio al emoji de estado, según la extensión:
+### Filas de metadata (siempre presentes, en este orden)
+1. **🤖 agentes** — cuántos corriendo ahora y cuáles. `0` si no hay ninguno.
+2. **🧠 skills** — skills disparados en el sprint, en orden.
+3. **📊 métricas** — formato fijo: `tests <antes>→<después> · PHPStan <errores> · cs ✅|❌ · build ✅|❌`. Antes de tomar la línea base: `tests —`. Omite `build` si el proyecto no compila assets.
+4. **❓ decisiones** — lo que espera respuesta del usuario, separado por `·`. Sin pendientes: `—`.
 
-| Extensión | Emoji | `🔄` / `❌` | `✅` completado |
-|---|---|---|---|
-| `.php` | 🐘 (elePHPant) | `🔄🐘`, `❌🐘` | `🐘` solo (sin `✅`) |
-| `.js` | ⚡ | `🔄⚡`, `❌⚡` | `⚡` solo (sin `✅`) |
-| `.twig` | 🍃 | `🔄🍃`, `❌🍃` | `🍃` solo (sin `✅`) |
+Las etiquetas van alineadas al mismo ancho de columna (padding tras el emoji hasta el `—`). Una línea `│` en blanco separa la metadata de las oleadas.
 
-Cuando el archivo está completo, el emoji de tipo reemplaza a `✅` (no se combinan) — el tipo ya implica que terminó bien. En `🔄`/`❌` sí se combinan ambos emojis, porque ahí el estado no es obvio por sí solo. Otras extensiones (CSS, YAML, etc.) siguen usando `✅`/`🔄`/`❌` normal, sin emoji de tipo.
-
-## Orden de filas (fijo — siempre en esta secuencia)
-
-1. **🤖 agentes** — cuántos corriendo y cuáles (señal en tiempo real)
-2. **🧠 skills** — skills de Superpowers disparados en este sprint, en orden
-3. **📊 métricas** — delta de tests (antes → después), errores de PHPStan, estado del build
-4. **✅ / 🔄 / ❌** — una fila por archivo o agente trabajado
-5. **🔒 adversarial** — siempre al final
+### Filas de tarea
+- **Una fila por tarea del plan, no por archivo.** La tarea se nombra por lo que toca y lo que hace (≤50 caracteres antes del sufijo).
+- **Agrupadas bajo `🌊 Oleada N`**, en el orden en que corren. Sprint de una sola oleada: igual lleva el encabezado `🌊 Oleada 1`.
+- **Sufijo entre corchetes, alineado a la derecha:**
+  - `⏳` / `🔄` / `❌` → `[agente · N arch]` (omite `N arch` si es 1 archivo)
+  - completada → `[hash corto del commit]`
+- **❌ lleva el motivo** tras el `—`, en vez de la descripción: `— PHPStan: 3 errores`, `— test rojo: testRejectsInactive`, `— bloqueado: permisos de Bash`.
 
 ## Leyenda de emoji
 
-- **😸** — solo el encabezado (UNO por árbol de sprint, en ningún otro lugar)
-- **✅** — completado
-- **🔄** — en progreso / esperando
-- **❌** — fallido / bloqueado
-- **🔒** — revisión adversarial de seguridad (siempre la última fila)
-- **🐘** — marca archivos `.php` (elePHPant); solo cuando está completado (reemplaza a `✅`); en `🔄`/`❌` se combina (`🔄🐘`/`❌🐘`)
-- **⚡** — marca archivos `.js`; solo cuando está completado (reemplaza a `✅`); en `🔄`/`❌` se combina (`🔄⚡`/`❌⚡`)
-- **🍃** — marca archivos `.twig`; solo cuando está completado (reemplaza a `✅`); en `🔄`/`❌` se combina (`🔄🍃`/`❌🍃`)
+| Emoji | Significado |
+|---|---|
+| 😸 | encabezado — uno solo por árbol, en ningún otro lugar |
+| ⏳ | pendiente — aún no arranca (oleada futura o esperando una decisión) |
+| 🔄 | en progreso — hay un agente trabajando en ella ahora |
+| ❌ | fallida / bloqueada — siempre con el motivo |
+| ✅ | completada (solo en tareas sin emoji de dominio) |
+| ❓ | decisión pendiente del usuario (solo en la fila de metadata) |
+| 🌊 | encabezado de oleada |
+| 🔒 | revisión adversarial — siempre la última fila |
+
+**Emoji de dominio** según lo que toca la tarea: 🐘 PHP (backend), 🍃 Twig, ⚡ JS. Si la tarea cruza dominios, usa el del archivo principal. Tareas de otro tipo (CSS, YAML, config) no llevan emoji de dominio y usan ✅ al completarse.
+
+- Completada: el emoji de dominio **reemplaza** a ✅ (`🐘`, no `✅🐘`).
+- Pendiente / en progreso / fallida: se combina pegado, sin espacio (`⏳🐘`, `🔄🍃`, `❌⚡`).
+
+`🔄` es solo para tareas con un agente corriendo. Si el sprint está detenido (`🤖 agentes — 0`), ninguna fila puede estar en `🔄`.
+
+## Línea compacta
+
+```
+😸 S1 · TICKET-123 · 3/6 · O2 🔄 2 agentes · ❌1 · ❓1 · tests 412→416
+```
+
+Campos en orden: sprint, ticket, progreso, oleada actual y su estado, fallidas (`❌N`), decisiones pendientes (`❓N`), delta de tests. Omite `❌`/`❓` si están en 0.
 
 ## Reglas
-
-- Imprime el árbol ANTES de lanzar agentes (muestra el plan — la fila de métricas muestra la línea base)
-- Reconstruye el árbol después de cada oleada completada (la fila de métricas se actualiza con deltas)
-- UN solo 😸 en el encabezado del sprint — el resto usa ✅ / 🔄 / ❌ / 🔒
-- Las filas 🤖 / 🧠 / 📊 siempre presentes — usa "—" si aún no se sabe
-- Alinea las etiquetas `agentes`/`skills`/`métricas` a la misma columna (padding tras el emoji) y separa metadata de filas de trabajo con una línea `│` en blanco
-- Archivos `.php`/`.js`/`.twig` completados muestran solo su emoji de tipo (`🐘`/`⚡`/`🍃`), sin `✅`; en `🔄`/`❌` el emoji de tipo se pega al de estado — el resto de extensiones no usa emoji de tipo
-- Una línea por agente/archivo, descripción ≤50 caracteres
-- `adversarial` siempre tiene su propia fila 🔒 al final
+- Imprime el árbol completo ANTES de lanzar la primera oleada y al cerrar el sprint; entre oleadas, la línea compacta.
+- Las filas 🤖 / 🧠 / 📊 / ❓ siempre están; usa `—` si aún no se sabe.
+- Una fila por tarea; el estado sale de la realidad (agente vivo → 🔄; sin agente → ⏳), nunca del plan.
+- Tarea completada sin commit todavía: usa `[sin commit]` — señal de que falta comitear.
+- `adversarial` siempre tiene su propia fila 🔒 al final.
